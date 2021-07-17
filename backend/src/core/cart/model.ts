@@ -11,4 +11,7 @@ interface Cart {
     products: ProductCount[]
 }
 
-export type { Cart, ProductCount }
+export type { 
+    Cart,
+    ProductCount
+}

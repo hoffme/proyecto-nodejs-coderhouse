@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { Cart, ProductCount } from '../core/cart/model';
-import EventCore from '../core/utils/events';
+import EventCore from '../core/generics/events';
 
 import successResponse from '../routers/responses/success';
 import { Repository } from '../storage/repositories/repository';

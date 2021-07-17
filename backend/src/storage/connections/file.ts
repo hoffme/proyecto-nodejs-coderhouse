@@ -1,17 +1,17 @@
 import fs from 'fs';
 
-class FileStorage {
+class FileStorage<T> {
 
     public readonly path: string
 
     constructor(path: string) { this.path = path }
 
-    async get() {
+    async get(): Promise<T> {
         const text = await fs.promises.readFile(this.path)
         return JSON.parse(text.toString());
     }
 
-    async set(obj: unknown) {
+    async set(obj: T): Promise<void> {
         const text = JSON.stringify(obj);
         
         try {
