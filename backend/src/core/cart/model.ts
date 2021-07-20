@@ -1,17 +1,19 @@
 import { Product } from "../product/model";
 
-interface ProductCount {
-    product: Product
+interface Item {
+    product_id: string
+    product: Product | undefined
     count: number
 }
 
 interface Cart {
     id: string
+    user_id: string
     timestamp: Date
-    products: ProductCount[]
+    items: Item[]
 }
 
 export type { 
     Cart,
-    ProductCount
+    Item
 }

@@ -6,24 +6,14 @@ import FileStorage from '../../connections/file';
 
 import uuid from '../../utils/uuid';
 
-class ProductFileRepository implements ProductRepository {
+class ProductFileRepository extends ProductRepository {
 
     private file: FileStorage<{[id: string]: Product}>
 
-    public readonly events: {
-        create: EventCore<Product>,
-        update: EventCore<Product>,
-        delete: EventCore<Product>
-    }
-
     constructor(path: string) {
+        super();
+        
         this.file = new FileStorage(path);
-
-        this.events = {
-            create: new EventCore("create"),
-            update: new EventCore("update"),
-            delete: new EventCore("delete")
-        }
     }
     
     async setup() {
@@ -47,8 +37,13 @@ class ProductFileRepository implements ProductRepository {
         const items = await this.file.get();
 
         return Object.values(items).filter(item => {
-            if (filter.query && item.name.toLowerCase().includes(filter.query.toLowerCase())) return true;
-            
+            if (filter.name && item.name !== filter.name) return false;
+            if (filter.code && item.code !== filter.code) return false;
+            if (filter.price_min && item.price < filter.price_min) return false;
+            if (filter.price_max && item.price > filter.price_max) return false;
+            if (filter.stock_min && item.stock < filter.stock_min) return false;
+            if (filter.stock_max && item.stock > filter.stock_max) return false;
+
             return true;
         })
     }
