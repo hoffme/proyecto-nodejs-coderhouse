@@ -1,11 +1,10 @@
 import knex, { Knex } from 'knex';
-import uuid from '../../utils/uuid';
 
-import EventCore from '../../../core/generics/events';
+import uuid from '../../utils/uuid';
+import KnexConnection from '../../connections/knex';
+
 import { Product } from '../../../core/product/model';
 import ProductRepository, { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../../core/product/repository';
-
-import KnexConnection from '../../connections/knex';
 
 class ProductsKnexRepository extends ProductRepository {
 
@@ -80,6 +79,7 @@ class ProductsKnexRepository extends ProductRepository {
         return await this.execute<Product[]>(async conn => {
             let query = conn.table(this.tableName).select("*");
             
+            if (filter.ids) query = query.where("id IN", filter.ids)
             if (filter.name) query = query.where("name", filter.name);
             if (filter.code) query = query.where("code", filter.code);
             if (filter.price_min) query = query.where("price", ">=", filter.price_min);

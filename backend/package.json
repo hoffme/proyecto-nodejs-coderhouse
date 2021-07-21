@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
+    "firebase": "^8.7.1",
     "knex": "^0.95.7",
     "mongoose": "^5.13.3"
   }

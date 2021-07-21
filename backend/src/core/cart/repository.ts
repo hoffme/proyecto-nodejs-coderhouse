@@ -58,6 +58,8 @@ abstract class CartRepository {
         })
     }
 
+    async setup(): Promise<void> {}
+
     abstract find(id: String): Promise<Cart>
     abstract search(filter: CartFilter): Promise<Cart[]>
 

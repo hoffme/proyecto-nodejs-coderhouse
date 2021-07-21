@@ -1,4 +1,3 @@
-import EventCore from '../../../core/generics/events';
 import { Product } from '../../../core/product/model';
 import ProductRepository, { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../../core/product/repository';
 
@@ -10,18 +9,15 @@ class ProductFileRepository extends ProductRepository {
 
     private file: FileStorage<{[id: string]: Product}>
 
-    constructor(path: string) {
+    constructor(file: FileStorage<{[id: string]: Product}>) {
         super();
-        
-        this.file = new FileStorage(path);
+
+        this.file = file;
     }
     
     async setup() {
-        try {
-            await this.file.get();
-        } catch (e) {
-            await this.file.set({});
-        }
+        try { await this.file.get() } 
+        catch { await this.file.set({}) }
     }
 
     async find(id: string): Promise<Product> {
@@ -37,6 +33,7 @@ class ProductFileRepository extends ProductRepository {
         const items = await this.file.get();
 
         return Object.values(items).filter(item => {
+            if (filter.ids && !filter.ids.includes(item.id)) return false;
             if (filter.name && item.name !== filter.name) return false;
             if (filter.code && item.code !== filter.code) return false;
             if (filter.price_min && item.price < filter.price_min) return false;

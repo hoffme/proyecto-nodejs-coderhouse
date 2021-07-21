@@ -1,9 +1,8 @@
 import { Product } from "../product/model";
 
 interface Item {
-    product_id: string
-    product: Product | undefined
     count: number
+    product: Product
 }
 
 interface Cart {

@@ -55,6 +55,7 @@ class ProductMongooseRepository extends ProductRepository {
     async search(filter: FilterProduct): Promise<Product[]> {
         let mongooseFilter: any = {};
 
+        if (filter.ids) mongooseFilter.id = { $in: filter.ids };
         if (filter.name) mongooseFilter.name = filter.name;
         if (filter.code) mongooseFilter.code = filter.code;
 
