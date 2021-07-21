@@ -86,6 +86,7 @@ class ProductsKnexRepository extends ProductRepository {
             if (filter.price_max) query = query.where("price", "<", filter.price_max);
             if (filter.stock_min) query = query.where("stock", ">=", filter.stock_min);
             if (filter.stock_max) query = query.where("stock", "<", filter.stock_max);
+            if (filter.stock_zero) query = query.where("stock", "=", 0);
 
             return await query;
         })

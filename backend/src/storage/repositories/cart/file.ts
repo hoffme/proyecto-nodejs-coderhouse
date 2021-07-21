@@ -1,123 +1,37 @@
-import { Cart, Item } from '../../../core/cart/model';
-import CartRepository, { CartFilter, CreateCartCMD, SetItemCMD, UpdateCartCMD } from '../../../core/cart/repository';
-
+import CartRepository, { CartFilter, CreateCartCMD, ItemRepository, UpdateCartCMD } from '../../../core/cart/repository';
 import ProductRepository from '../../../core/product/repository';
 
 import FileStorage from '../../connections/file';
 
-import uuid from '../../utils/uuid';
-
 class CartFileRepository extends CartRepository {
+    
+    private file: FileStorage<{[id: string]: CartRepository}>
 
-    private file: FileStorage<{[id: string]: Cart}>
-
-    constructor(path: string, products: ProductRepository) {
+    constructor(products: ProductRepository, path: string) {
         super(products);
 
         this.file = new FileStorage(path);
     }
     
     async setup() {
-        try {
-            await this.file.get();
-        } catch (e) {
-            await this.file.set({});
-        }
+        try { await this.file.get() } 
+        catch (e) { await this.file.set({}) }
     }
 
-    async find(id: string): Promise<Cart> {
-        const carts = await this.file.get();
-        
-        const cart = carts[id];
-        if (!cart) throw new Error(`cart not found`);
-
-        await this.hidratate_items(cart.items);
-        
-        return cart;
+    protected _find(id: String): Promise<CartRepository> {
+        throw new Error('Method not implemented.');
     }
-    
-    async search(filter: CartFilter): Promise<Cart[]> {
-        const carts = await this.file.get();
-
-        const result = Object.values(carts).filter(cart => {
-            if (filter.user_id && cart.user_id !== filter.user_id) return false;
-
-            return true;
-        })
-
-        await this.hidratate_items(result.reduce<Item[]>((result, cart) => {
-            result.push(...(cart.items));
-            return result;
-        }, []));
-
-        return result;
+    protected _search(filter: CartFilter): Promise<CartRepository[]> {
+        throw new Error('Method not implemented.');
     }
-
-    async create(cmd: CreateCartCMD): Promise<Cart> {
-        const cart: Cart = {
-            id: uuid(),
-            timestamp: new Date(),
-            items: [],
-            ...cmd
-        }
-
-        const carts = await this.file.get();
-        carts[cart.id] = cart;
-
-        await this.file.set(carts);
-
-        this.events.create.notify(cart);
-
-        return cart;
+    protected _create(cmd: CreateCartCMD): Promise<CartRepository> {
+        throw new Error('Method not implemented.');
     }
-
-    async update(id: string, update: UpdateCartCMD): Promise<Cart> {
-        const carts = await this.file.get();
-        
-        const cartUpdate = { ...(carts[id]), ...update };
-        carts[id] = cartUpdate;
-
-        await this.file.set(carts);
-
-        await this.hidratate_items(cartUpdate.items);
-
-        this.events.update.notify(cartUpdate)
-
-        return cartUpdate;
+    protected _update(id: string, cmd: UpdateCartCMD): Promise<CartRepository> {
+        throw new Error('Method not implemented.');
     }
-
-    async delete(id: string): Promise<Cart> {
-        const carts = await this.file.get();
-
-        const cart = carts[id];
-
-        delete carts[id];
-
-        await this.file.set(carts);
-
-        await this.hidratate_items(cart.items);
-
-        this.events.delete.notify(cart)
-
-        return cart;
-    }
-
-    async setItem(cart_id: string, cmd: SetItemCMD): Promise<Item> {
-        const carts = await this.file.get();
-
-        const updateItem: Item = {
-            product_id: cmd.product_id,
-            count: cmd.count,
-            product: undefined
-        }
-
-        carts[cart_id].items.filter(item => item.product_id === item.product_id ? updateItem : item);
-
-        await this.file.set(carts);
-
-        await this.hidratate_item(updateItem);
-
-        return updateItem;
+    protected _setItem(id: string, item: ItemRepository): Promise<ItemRepository> {
+        throw new Error('Method not implemented.');
     }
 }
 

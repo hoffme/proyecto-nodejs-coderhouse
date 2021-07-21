@@ -40,6 +40,7 @@ class ProductFileRepository extends ProductRepository {
             if (filter.price_max && item.price > filter.price_max) return false;
             if (filter.stock_min && item.stock < filter.stock_min) return false;
             if (filter.stock_max && item.stock > filter.stock_max) return false;
+            if (filter.stock_zero && item.stock != 0) return false; 
 
             return true;
         })

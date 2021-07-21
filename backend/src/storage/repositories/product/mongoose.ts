@@ -63,9 +63,10 @@ class ProductMongooseRepository extends ProductRepository {
         if (filter.price_min) mongooseFilter.price.gt = filter.price_min;
         if (filter.price_max) mongooseFilter.price.lt = filter.price_max;
 
-        if (filter.stock_min || filter.stock_max) mongooseFilter.stock = {}
+        if (filter.stock_min || filter.stock_max || filter.stock_zero) mongooseFilter.stock = {}
         if (filter.stock_min) mongooseFilter.stock.gt = filter.stock_min;
         if (filter.stock_max) mongooseFilter.stock.lt = filter.stock_max;
+        if (filter.stock_zero) mongooseFilter.stock.eq = 0;
 
         const products = await this.collection.find(mongooseFilter);
         return products;
