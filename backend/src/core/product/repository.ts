@@ -46,6 +46,8 @@ abstract class ProductRepository {
         }
     }
 
+    async setup(): Promise<void> {}
+
     abstract find(id: String): Promise<Product>
     abstract search(filter: FilterProduct): Promise<Product[]>
     abstract create(cmd: CreateProductCMD): Promise<Product>

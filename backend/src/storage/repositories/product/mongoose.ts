@@ -33,12 +33,12 @@ class ProductMongooseRepository extends ProductRepository {
         this.collection = mongoose.model(this.collectionName, this.schema);
     }
 
-    async setup() {
-        return new Promise((resolve, reject) => {
+    async setup(): Promise<void> {
+        await new Promise((resolve, reject) => {
             mongoose.connect(
                 this.connection.uri, 
                 this.connection.options,
-                (err: Error) => {
+                (err: ErrorCallback) => {
                     if (err) reject(err);
                     resolve(undefined);
                 })

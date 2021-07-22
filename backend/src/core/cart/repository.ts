@@ -23,7 +23,7 @@ interface ItemRepository {
     count: number
 }
 
-interface CartRepository {
+interface CartRepositoryItem {
     id: string
     user_id: string
     timestamp: Date
@@ -36,7 +36,7 @@ abstract class CartRepository {
     public readonly events: {
         create: EventCore<Cart>
         update: EventCore<Cart>
-        delete: EventCore<Cart>
+        setItem: EventCore<{ cart_id: string, item: Item }>
     }
 
     protected constructor(products: ProductRepository) {
@@ -44,7 +44,7 @@ abstract class CartRepository {
         this.events = {
             create: new EventCore('create'),
             update: new EventCore('update'),
-            delete: new EventCore('delete')
+            setItem: new EventCore('set-item')
         }
     }
 
@@ -64,7 +64,7 @@ abstract class CartRepository {
         })
     }
 
-    private async decode_cart(cart: CartRepository): Promise<Cart> {
+    private async decode_cart(cart: CartRepositoryItem): Promise<Cart> {
         const products_array = await this.products.search({
             ids: cart.items_ref.map(item => item.product_id)
         })
@@ -85,7 +85,7 @@ abstract class CartRepository {
         return result;
     }
 
-    private async decode_carts(carts: CartRepository[]): Promise<Cart[]> {
+    private async decode_carts(carts: CartRepositoryItem[]): Promise<Cart[]> {
         const ids = carts.reduce<string[]>((result, cart) => {
             result.push(...cart.items_ref.map(item => item.product_id));
             return result;
@@ -128,26 +128,38 @@ abstract class CartRepository {
 
     async create(cmd: CreateCartCMD): Promise<Cart> {
         const cart_rep = await this._create(cmd);
-        return await this.decode_cart(cart_rep);
+        const cart = await this.decode_cart(cart_rep);
+    
+        this.events.create.notify(cart);
+
+        return cart;
     }
 
     async update(id: string, update: UpdateCartCMD): Promise<Cart> {
         const cart_rep = await this._update(id, update);
-        return await this.decode_cart(cart_rep);
+        const cart = await this.decode_cart(cart_rep);
+    
+        this.events.update.notify(cart);
+    
+        return cart;
     }
 
     async setItem(cart_id: string, item: ItemRepository): Promise<Item> {
         const item_rep = await this._setItem(cart_id, item);
-        return await this.decode_item(item_rep);
+        const item_ext = await this.decode_item(item_rep);
+    
+        this.events.setItem.notify({ cart_id, item: item_ext });
+
+        return item_ext;
     }
 
     async setup(): Promise<void> {}
 
-    protected abstract _find(id: String): Promise<CartRepository>
-    protected abstract _search(filter: CartFilter): Promise<CartRepository[]>
+    protected abstract _find(id: String): Promise<CartRepositoryItem>
+    protected abstract _search(filter: CartFilter): Promise<CartRepositoryItem[]>
 
-    protected abstract _create(cmd: CreateCartCMD): Promise<CartRepository>
-    protected abstract _update(id: string, cmd: UpdateCartCMD): Promise<CartRepository>
+    protected abstract _create(cmd: CreateCartCMD): Promise<CartRepositoryItem>
+    protected abstract _update(id: string, cmd: UpdateCartCMD): Promise<CartRepositoryItem>
     
     protected abstract _setItem(id: string, item: ItemRepository): Promise<ItemRepository>
 }
@@ -157,5 +169,6 @@ export type {
     CartFilter,
     CreateCartCMD,
     UpdateCartCMD,
+    CartRepositoryItem,
     ItemRepository
 }
