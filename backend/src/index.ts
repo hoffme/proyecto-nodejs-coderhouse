@@ -2,6 +2,8 @@ import express from 'express';
 import { Server } from 'http';
 
 import Controllers from './controllers/index';
+import controllerSettings from './settings/controllers';
+
 import apiRouter from './routers/api';
 
 (async () => {
@@ -9,7 +11,7 @@ import apiRouter from './routers/api';
     const PORT = process.env.PORT || 8080;
 
     // Setups controllers
-    await Controllers.setup();
+    await Controllers.setup(controllerSettings);
 
     // create app
     const app = express();

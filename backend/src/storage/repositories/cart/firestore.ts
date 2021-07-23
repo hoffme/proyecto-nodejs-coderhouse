@@ -10,11 +10,11 @@ class CartFirestoreRepository extends CartRepository {
     private readonly firestore: firebase.firestore.Firestore;
     private readonly collectionName: string;
 
-    constructor(products: ProductRepository, firestore: firebase.firestore.Firestore, collectionName: string) {
+    constructor(products: ProductRepository, firestore: firebase.firestore.Firestore) {
         super(products);
         
         this.firestore = firestore;
-        this.collectionName = collectionName;
+        this.collectionName = 'carts';
     }
 
     private get collection(): firebase.firestore.CollectionReference {

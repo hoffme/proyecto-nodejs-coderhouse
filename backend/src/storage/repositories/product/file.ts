@@ -9,10 +9,10 @@ class ProductFileRepository extends ProductRepository {
 
     private file: FileStorage<{[id: string]: Product}>
 
-    constructor(file: FileStorage<{[id: string]: Product}>) {
+    constructor(path: string) {
         super();
 
-        this.file = file;
+        this.file = new FileStorage(path);
     }
     
     async setup() {

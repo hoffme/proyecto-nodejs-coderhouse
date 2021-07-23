@@ -10,11 +10,11 @@ class ProductFirestoreRepository extends ProductRepository {
     private readonly firestore: firebase.firestore.Firestore;
     private readonly collectionName: string;
 
-    constructor(firestore: firebase.firestore.Firestore, collectionName: string) {
+    constructor(firestore: firebase.firestore.Firestore) {
         super();
         
         this.firestore = firestore;
-        this.collectionName = collectionName;
+        this.collectionName = 'products';
     }
 
     private get collection(): firebase.firestore.CollectionReference {
