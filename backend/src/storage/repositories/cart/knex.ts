@@ -169,6 +169,24 @@ class CartsKnexRepository extends CartRepository {
         return result;
     }
 
+    protected async _clear(id: string): Promise<CartRepositoryItem> {
+        const row = await this.execute<CartItemsRaw | undefined>(async (conn): Promise<CartItemsRaw | undefined> => {
+            await conn.table(this.tables.item).where('cart_id', id).delete();
+
+            const rows: CartItemsRaw[] = await conn.table(this.tables.cart).where('id', id).limit(1);
+
+            return rows[0];
+        })
+        if (!row) throw new Error('cart not found');
+
+        return {
+            id: row.id,
+            user_id: row.user_id,
+            timestamp: row.timestamp,
+            items_ref: [] 
+        }
+    }
+
     protected async _setItem(id: string, item: ItemRepository): Promise<ItemRepository> {
         await this.execute(async conn => {
             const itemRaw = {
@@ -193,6 +211,29 @@ class CartsKnexRepository extends CartRepository {
         })
 
         return item;
+    }
+
+    protected async _remItem(id: string, product_id: string): Promise<ItemRepository> {
+        const result = await this.execute<ItemRepository | undefined>(async conn => {
+            const results = await conn.table(this.tables.item)
+                .select("*")
+                .where("cart_id", id)
+                .where("product_id", product_id)
+                .limit(1);
+
+            const item = results[0];
+            if (!item) return undefined;
+
+            await conn.table(this.tables.item)
+                .where("cart_id", id)
+                .where("product_id", product_id)
+                .del();
+            
+            return item;
+        })
+        if (!result) throw new Error('product not found');
+
+        return result;
     }
 }
 

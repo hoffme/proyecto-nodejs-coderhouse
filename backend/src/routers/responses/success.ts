@@ -1,7 +1,7 @@
 import { Response } from "express";
 
-const response = (res: Response, obj = {}) => {
+const successResponse = (res: Response, obj: any = {}) => {
     res.status(200).json({ result: obj });
 }
 
-export default response;
+export default successResponse;

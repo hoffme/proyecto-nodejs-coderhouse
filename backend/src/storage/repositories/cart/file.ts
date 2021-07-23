@@ -56,7 +56,21 @@ class CartFileRepository extends CartRepository {
 
     protected async _update(id: string, update: UpdateCartCMD): Promise<CartRepositoryItem> {
         const items = await this.file.get();
+        if (!items[id]) throw new Error('cart not found');
+        
         items[id] = { ...(items[id]), ...update }
+    
+        await this.file.set(items);
+
+        return items[id];
+    }
+
+    protected async _clear(id: string): Promise<CartRepositoryItem> {
+        const items = await this.file.get();
+        if (!items[id]) throw new Error('cart not found');
+
+        items[id].items_ref = [];
+        items[id].timestamp = new Date();
     
         await this.file.set(items);
 
@@ -81,6 +95,26 @@ class CartFileRepository extends CartRepository {
         await this.file.set(items);
 
         return item;
+    }
+
+    protected async _remItem(id: string, product_id: string): Promise<ItemRepository> {
+        const items = await this.file.get();
+        if (!items[id]) throw new Error('cart not found');
+        
+        let result: ItemRepository | undefined = undefined;
+
+        items[id].items_ref = items[id].items_ref.filter(item => {
+            if (item.product_id !== product_id) return true;
+            
+            result = item;
+            return false;
+        });
+
+        if (!result) throw new Error('item not found');
+    
+        await this.file.set(items);
+
+        return result;
     }
 }
 

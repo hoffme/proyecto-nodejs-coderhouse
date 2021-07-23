@@ -54,6 +54,20 @@ class CartMemoryRepository extends CartRepository {
 
         return cartUpdated;
     }
+
+    protected async _clear(id: string): Promise<CartRepositoryItem> {
+        let result: CartRepositoryItem | undefined;
+        
+        this.items.forEach(cart => {
+            if (cart.id !== id) return;
+
+            cart.items_ref = [];
+            result = cart;
+        })
+        if (!result) throw new Error('cart not found');
+
+        return result;        
+    }
     
     protected async _setItem(id: string, item: ItemRepository): Promise<ItemRepository> {
         const cart = await this._find(id);
@@ -71,6 +85,23 @@ class CartMemoryRepository extends CartRepository {
         this.items = this.items.map(item => item.id === cart.id ? cart : item);
 
         return item;
+    }
+
+    protected async _remItem(id: string, product_id: string): Promise<ItemRepository> {
+        const cart = await this._find(id);
+
+        let result: ItemRepository | undefined;
+        cart.items_ref = cart.items_ref.filter(item => {
+            if (item.product_id !== product_id) return true;
+
+            result = item;
+            return false;
+        })
+        if (!result) throw new Error('product not found');
+
+        this.items = this.items.map(item => item.id !== cart.id ? item : cart);
+
+        return result;
     }
 }
 

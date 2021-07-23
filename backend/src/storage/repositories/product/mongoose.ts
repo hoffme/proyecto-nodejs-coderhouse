@@ -38,7 +38,7 @@ class ProductMongooseRepository extends ProductRepository {
             mongoose.connect(
                 this.connection.uri, 
                 this.connection.options,
-                (err: ErrorCallback) => {
+                (err) => {
                     if (err) reject(err);
                     resolve(undefined);
                 })

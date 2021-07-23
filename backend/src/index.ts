@@ -15,9 +15,6 @@ import apiRouter from './routers/api';
     const app = express();
     const http = new Server(app);
 
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-
     // public folder
     app.use(express.static('../public'));
 

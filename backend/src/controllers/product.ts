@@ -1,15 +1,15 @@
-import { NextFunction, Request, Response } from 'express';
+import EventCore from "../core/generics/events";
 
-import { Product } from '../core/product/model';
-import EventCore from '../core/generics/events';
-
-import successResponse from '../routers/responses/success';
-import { Repository } from '../storage/repositories/repository';
-
+import { Product } from "../core/product/model";
+import ProductRepository, { 
+    CreateProductCMD, 
+    FilterProduct, 
+    UpdateProductCMD 
+} from "../core/product/repository";
 
 class ProductsController {
 
-    private repository: Repository<Product>
+    private repository: ProductRepository
 
     public readonly events: {
         create: EventCore<Product>
@@ -17,7 +17,7 @@ class ProductsController {
         delete: EventCore<Product>
     }
 
-    constructor(repository: Repository<Product>) {
+    constructor(repository: ProductRepository) {
         this.repository = repository;
 
         this.events = {
@@ -27,53 +27,24 @@ class ProductsController {
         }
     }
 
-    // Methods
-
-    async getAll() { return await this.repository.getAll() }
-
-    async getById(id: string) { return await this.repository.getById(id) }
-
-    async create(create: Product) { return await this.repository.create(create) }
-
-    async update(update: Product) { return await this.repository.update(update.id, update) }
-
-    async delete(id: string) { return await this.repository.delete(id) }
-
-    // HTTP
-
-    async getHTTP(req: Request, res: Response, next: NextFunction) {
-        let result: Product[] | Product | undefined = undefined;
-
-        const id = req.params.id;
-        if (id && id.length > 0) {
-            try { result = await this.getById(id) } 
-            catch (e) {
-                if (e.message !== "not found") throw e;
-            }
-        } else {
-            result = await this.getAll();
-        }
-        
-        successResponse(res, result);
+    async search(filter: FilterProduct): Promise<Product[]> {
+        return await this.repository.search(filter);
     }
 
-    async createHTTP(req: Request, res: Response, next: NextFunction) {
-        const createParams = req.body;
-        const product = await this.create(createParams);
-        successResponse(res, product);
+    async find(id: string): Promise<Product> {
+        return await this.repository.find(id) 
     }
 
-    async updateHTTP(req: Request, res: Response, next: NextFunction) {
-        const id = req.params.id;
-        const update = req.body;
-        const productUpdated = await this.update({ id, ...update });
-        successResponse(res, productUpdated);
+    async create(cmd: CreateProductCMD): Promise<Product> {
+        return await this.repository.create(cmd); 
     }
 
-    async deleteHTTP(req: Request, res: Response, next: NextFunction) {
-        const id = req.params.id;
-        const productDeleted = await this.delete(id);
-        successResponse(res, productDeleted);
+    async update(id: string, cmd: UpdateProductCMD): Promise<Product> {
+        return await this.repository.update(id, cmd); 
+    }
+
+    async delete(id: string): Promise<Product> {
+        return await this.repository.delete(id)
     }
 }
 

@@ -36,7 +36,9 @@ abstract class CartRepository {
     public readonly events: {
         create: EventCore<Cart>
         update: EventCore<Cart>
+        clear: EventCore<Cart>
         setItem: EventCore<{ cart_id: string, item: Item }>
+        remItem: EventCore<{ cart_id: string, item: Item }>
     }
 
     protected constructor(products: ProductRepository) {
@@ -44,7 +46,9 @@ abstract class CartRepository {
         this.events = {
             create: new EventCore('create'),
             update: new EventCore('update'),
-            setItem: new EventCore('set-item')
+            clear: new EventCore('clear'),
+            setItem: new EventCore('set-item'),
+            remItem: new EventCore('rem-item')
         }
     }
 
@@ -144,11 +148,29 @@ abstract class CartRepository {
         return cart;
     }
 
+    async clear(id: string): Promise<Cart> {
+        const cart_rep = await this._clear(id);
+        const cart = await this.decode_cart(cart_rep);
+    
+        this.events.clear.notify(cart);
+    
+        return cart;
+    }
+
     async setItem(cart_id: string, item: ItemRepository): Promise<Item> {
         const item_rep = await this._setItem(cart_id, item);
         const item_ext = await this.decode_item(item_rep);
     
         this.events.setItem.notify({ cart_id, item: item_ext });
+
+        return item_ext;
+    }
+
+    async remItem(cart_id: string, product_id: string): Promise<Item> {
+        const item_rep = await this._remItem(cart_id, product_id);
+        const item_ext = await this.decode_item(item_rep);
+    
+        this.events.remItem.notify({ cart_id, item: item_ext });
 
         return item_ext;
     }
@@ -160,8 +182,10 @@ abstract class CartRepository {
 
     protected abstract _create(cmd: CreateCartCMD): Promise<CartRepositoryItem>
     protected abstract _update(id: string, cmd: UpdateCartCMD): Promise<CartRepositoryItem>
+    protected abstract _clear(id: string): Promise<CartRepositoryItem>
     
     protected abstract _setItem(id: string, item: ItemRepository): Promise<ItemRepository>
+    protected abstract _remItem(id: string, product_id: string): Promise<ItemRepository>
 }
 
 export default CartRepository;

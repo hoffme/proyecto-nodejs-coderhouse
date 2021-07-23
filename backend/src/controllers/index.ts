@@ -1,21 +1,37 @@
 import ProductsController from "./product";
 import CartController from "./cart";
-import ProductStoreBuilder from "../storage/stores/cart";
-import CartStoreBuilder from "../storage/stores/product";
+
+import ProductRepository from "../core/product/repository";
+import CartRepository from "../core/cart/repository";
+
+import ProductMemoryRepository from "../storage/repositories/product/memory";
+import CartMemoryRepository from "../storage/repositories/cart/memory";
 
 class Controllers {
+
+    private static productRepository: ProductRepository;
     static products: ProductsController;
+
+    private static cartRepository: CartRepository;
     static cart: CartController;
 
+    private static async setupProduct() {
+        Controllers.productRepository = new ProductMemoryRepository();
+        await Controllers.productRepository.setup();
+
+        Controllers.products = new ProductsController(Controllers.productRepository);
+    }
+
+    private static async setupCart() {
+        Controllers.cartRepository = new CartMemoryRepository(Controllers.productRepository);
+        await Controllers.cartRepository.setup();
+        
+        Controllers.cart = new CartController(Controllers.cartRepository);
+    }
+
     static async setup() {
-        const productStore = new ProductStoreBuilder();
-        await productStore.setRepository('memory');
-
-        const cartStore = new CartStoreBuilder(productStore.repository());
-        cartStore.setRepository('memory');
-
-        Controllers.products = new ProductsController(productStore.repository());
-        Controllers.cart = new CartController(cartStore.repository(), Controllers.products);
+        await Controllers.setupProduct();
+        await Controllers.setupCart();
     }
 }
 

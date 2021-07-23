@@ -87,6 +87,17 @@ class CartMongooseRepository extends CartRepository {
         return cart;
     }
 
+    protected async _clear(id: string): Promise<CartRepositoryItem> {
+        const cart: CartRepositoryItem = {
+            ...(await this._find(id)),
+            items_ref: []
+        }
+
+        await this.collection.updateOne({id}, { $set: cart });
+
+        return cart;
+    }
+
     protected async _setItem(id: string, item: ItemRepository): Promise<ItemRepository> {
         const cart = await this._find(id);
         
@@ -103,6 +114,24 @@ class CartMongooseRepository extends CartRepository {
         await this.collection.updateOne({id}, { $set: cart });
 
         return item;
+    }
+
+    protected async _remItem(id: string, product_id: string): Promise<ItemRepository> {
+        const cart = await this._find(id);
+        
+        let result: ItemRepository | undefined;
+        cart.items_ref = cart.items_ref.filter(item => {
+            if (item.product_id !== product_id) return true;
+            
+            result = item;
+            return false;
+        });
+
+        if (!result) throw new Error('item not found');
+    
+        await this.collection.updateOne({id}, { $set: cart });
+
+        return result;
     }
 }
 
