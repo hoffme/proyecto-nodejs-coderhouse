@@ -1,13 +1,8 @@
-import { CartRepositoryType } from "../storage/builders/cart";
-import { ProductRepositoryType } from "../storage/builders/product";
+import BuilderSettings from "../storage/builders/settings";
 
 interface ControllerSettings {
-    product: {
-        type: ProductRepositoryType
-    },
-    cart: {
-        type: CartRepositoryType
-    }
+    product: BuilderSettings
+    cart: BuilderSettings
 }
 
 export default ControllerSettings;

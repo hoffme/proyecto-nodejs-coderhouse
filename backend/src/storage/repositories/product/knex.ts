@@ -1,7 +1,7 @@
 import knex, { Knex } from 'knex';
 
 import uuid from '../../utils/uuid';
-import KnexConnection from '../../connections/knex';
+import KnexSettings from '../../settings/knex';
 
 import { Product } from '../../../core/product/model';
 import ProductRepository, { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../../core/product/repository';
@@ -9,17 +9,17 @@ import ProductRepository, { CreateProductCMD, FilterProduct, UpdateProductCMD } 
 class ProductsKnexRepository extends ProductRepository {
 
     private readonly tableName: string;
-    private readonly connection: KnexConnection;
+    private readonly settings: KnexSettings;
 
-    constructor(connection: KnexConnection) {
+    constructor(settings: KnexSettings) {
         super();
 
         this.tableName = 'products';
-        this.connection = connection;
+        this.settings = settings;
     }
 
     async execute<T>(commands: (connection: Knex<any, unknown[]>) => Promise<T>): Promise<T> {
-        const connection = knex(this.connection);
+        const connection = knex(this.settings);
 
         try {
             return await commands(connection)

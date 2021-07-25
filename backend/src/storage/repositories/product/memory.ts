@@ -4,6 +4,7 @@ import ProductRepository, {
     FilterProduct, 
     UpdateProductCMD 
 } from "../../../core/product/repository";
+import MemorySettings from "../../settings/memory";
 
 import uuid from "../../utils/uuid";
 
@@ -11,7 +12,7 @@ class ProductMemoryRepository extends ProductRepository {
 
     private items: Product[];
     
-    constructor() {
+    constructor(settings: MemorySettings) {
         super();
 
         this.items = [];

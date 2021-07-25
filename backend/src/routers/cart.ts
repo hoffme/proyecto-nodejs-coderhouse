@@ -17,18 +17,6 @@ router.get('/:user_id', auth('client'), wrap(async req => {
     return await Controllers.cart.create({ user_id });
 }));
 
-router.put('/:user_id', auth('client'), wrap(async req => {
-    const user_id: string = req.params.user_id; 
-    
-    const carts = await Controllers.cart.search({ user_id });
-    if (carts.length === 0) throw new Error('cart not found');
-    
-    const cart = carts[0];
-    const update: UpdateCartCMD = req.body;
-
-    return await Controllers.cart.update(cart.id, update);
-}));
-
 router.delete('/:user_id', auth('client'), wrap(async req => {
     const user_id: string = req.params.user_id; 
     

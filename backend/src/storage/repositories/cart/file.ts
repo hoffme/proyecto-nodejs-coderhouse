@@ -1,17 +1,19 @@
 import CartRepository, { CartFilter, CartRepositoryItem, CreateCartCMD, ItemRepository, UpdateCartCMD } from '../../../core/cart/repository';
 import ProductRepository from '../../../core/product/repository';
 
-import FileStorage from '../../connections/file';
+import FileSettings from '../../settings/file';
+
+import FileStorage from '../../utils/file';
 import uuid from '../../utils/uuid';
 
 class CartFileRepository extends CartRepository {
     
     private file: FileStorage<{[id: string]: CartRepositoryItem}>
 
-    constructor(products: ProductRepository, path: string) {
+    constructor(products: ProductRepository, setting: FileSettings) {
         super(products);
 
-        this.file = new FileStorage(path);
+        this.file = new FileStorage(setting.path);
     }
     
     async setup() {
@@ -77,7 +79,7 @@ class CartFileRepository extends CartRepository {
         return items[id];
     }
 
-    protected async _setItem(id: string, item: ItemRepository): Promise<ItemRepository> {
+    protected async _setItem(id: string, newItem: ItemRepository): Promise<ItemRepository> {
         const items = await this.file.get();
         const cart = items[id];
         if (!cart) throw new Error('cart not found');
@@ -87,14 +89,14 @@ class CartFileRepository extends CartRepository {
             if (item.product_id !== item.product_id) return item;
             
             added = true;
-            return item;
+            return newItem;
         })
 
-        if (!added) cart.items_ref.push(item);
+        if (!added) cart.items_ref.push(newItem);
 
         await this.file.set(items);
 
-        return item;
+        return newItem;
     }
 
     protected async _remItem(id: string, product_id: string): Promise<ItemRepository> {

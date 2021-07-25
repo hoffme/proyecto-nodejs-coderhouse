@@ -2,10 +2,14 @@ import ControllerSettings from "../controllers/settings";
 
 const controllerSettings: ControllerSettings = {
     product: {
-        type: 'memory'
+        file: {
+            path: './datos/products.json'
+        }
     },
     cart: {
-        type: 'memory'
+        file: {
+            path: './datos/cart.json'
+        }
     }
 }
 

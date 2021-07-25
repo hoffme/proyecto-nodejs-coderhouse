@@ -3,12 +3,12 @@ import mongoose, { CallbackError, Schema } from 'mongoose';
 import CartRepository, { CartFilter, CartRepositoryItem, CreateCartCMD, ItemRepository, UpdateCartCMD } from '../../../core/cart/repository';
 import ProductRepository from '../../../core/product/repository';
 
-import MongooseConnection from '../../connections/mongoose';
+import MongooseSettings from '../../settings/mongoose';
 import uuid from '../../utils/uuid';
 
 class CartMongooseRepository extends CartRepository {
     
-    private readonly connection: MongooseConnection;
+    private readonly settings: MongooseSettings;
     private readonly collectionName: string;
 
     private readonly collection: mongoose.Model<CartRepositoryItem>;
@@ -16,10 +16,10 @@ class CartMongooseRepository extends CartRepository {
     private readonly itemSchema: Schema<ItemRepository>;
     private readonly schema: Schema<CartRepositoryItem>;
 
-    constructor(products: ProductRepository, connection: MongooseConnection) {
+    constructor(products: ProductRepository, settings: MongooseSettings) {
         super(products);
 
-        this.connection = connection;
+        this.settings = settings;
         this.collectionName = 'carts';
 
         this.itemSchema = new Schema<ItemRepository>({
@@ -39,8 +39,8 @@ class CartMongooseRepository extends CartRepository {
     async setup(): Promise<void> {
         return new Promise((resolve, reject) => {
             mongoose.connect(
-                this.connection.uri, 
-                this.connection.options,
+                this.settings.uri, 
+                this.settings.options,
                 (err: CallbackError) => {
                     if (err) reject(err);
                     resolve(undefined);

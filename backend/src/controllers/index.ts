@@ -12,10 +12,10 @@ class Controllers {
     static cart: CartController;
 
     static async setup(settings: ControllerSettings) {
-        const productRepository = await ProductRepositoryBuilder(settings.product.type);
+        const productRepository = await ProductRepositoryBuilder(settings.product);
         Controllers.products = new ProductsController(productRepository);
         
-        const cartRepository = await CartRepositoryBuilder(productRepository, settings.cart.type);        
+        const cartRepository = await CartRepositoryBuilder(productRepository, settings.cart);        
         Controllers.cart = new CartController(cartRepository);
     }
 }

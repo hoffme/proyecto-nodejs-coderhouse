@@ -1,3 +1,5 @@
+import BuilderSettings from "./settings";
+
 import CartRepository from "../../core/cart/repository";
 import ProductRepository from "../../core/product/repository";
 
@@ -7,20 +9,27 @@ import CartsKnexRepository from "../repositories/cart/knex";
 import CartMemoryRepository from "../repositories/cart/memory";
 import CartMongooseRepository from "../repositories/cart/mongoose";
 
-import firebase from 'firebase';
+import FileSettings from "../settings/file";
+import MemorySettings from "../settings/memory";
+import MongooseSettings from "../settings/mongoose";
+import KnexSettings from "../settings/knex";
+import FirestoreSettings from "../settings/firestore";
 
-type CartRepositoryType = 'memory' | 'file' | 'mongoose' | 'knex' | 'firebase';
-
-const CartRepositoryBuilder = async (products: ProductRepository, type: CartRepositoryType): Promise<CartRepository> => {
-    const builders: {[key:string]: () => CartRepository} = {
-        memory: () => new CartMemoryRepository(products),
-        file: () => new CartFileRepository(products, './datos/cart.json'),
-        mongoose: () => new CartMongooseRepository(products, { uri: '', options: {} }),
-        knex: () => new CartsKnexRepository(products, {}),
-        firebase: () => new CartFirestoreRepository(products, firebase.firestore())
+const CartRepositoryBuilder = async (products: ProductRepository, settings: BuilderSettings): Promise<CartRepository> => {
+    const builders: {[key:string]: (settings: any) => CartRepository} = {
+        memory: (settings: MemorySettings) => new CartMemoryRepository(products, settings),
+        file: (settings: FileSettings) => new CartFileRepository(products, settings),
+        mongoose: (settings: MongooseSettings) => new CartMongooseRepository(products, settings),
+        knex: (settings: KnexSettings) => new CartsKnexRepository(products, settings),
+        firebase: (settings: FirestoreSettings) => new CartFirestoreRepository(products, settings)
     }
 
-    const repository = builders[type]();
+    const type: keyof BuilderSettings = (Object.keys(settings) as Array<keyof typeof settings>)[0];
+    
+    const builder = builders[type];
+    if (!builder) throw new Error('invalid settings');
+
+    const repository = builder(settings[type]);
 
     await repository.setup();
 
@@ -28,4 +37,3 @@ const CartRepositoryBuilder = async (products: ProductRepository, type: CartRepo
 }
 
 export default CartRepositoryBuilder;
-export type { CartRepositoryType };

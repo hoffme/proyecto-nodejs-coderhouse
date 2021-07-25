@@ -1,7 +1,8 @@
 import { Product } from '../../../core/product/model';
 import ProductRepository, { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../../core/product/repository';
+import FileSettings from '../../settings/file';
 
-import FileStorage from '../../connections/file';
+import FileStorage from '../../utils/file';
 
 import uuid from '../../utils/uuid';
 
@@ -9,10 +10,10 @@ class ProductFileRepository extends ProductRepository {
 
     private file: FileStorage<{[id: string]: Product}>
 
-    constructor(path: string) {
+    constructor(settings: FileSettings) {
         super();
 
-        this.file = new FileStorage(path);
+        this.file = new FileStorage(settings.path);
     }
     
     async setup() {

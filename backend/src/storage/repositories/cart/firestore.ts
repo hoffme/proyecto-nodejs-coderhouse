@@ -2,23 +2,24 @@ import firebase from 'firebase';
 
 import CartRepository, { CartFilter, CartRepositoryItem, CreateCartCMD, ItemRepository, UpdateCartCMD } from '../../../core/cart/repository';
 import ProductRepository from '../../../core/product/repository';
+import FirestoreSettings from '../../settings/firestore';
 
 import uuid from '../../utils/uuid';
 
 class CartFirestoreRepository extends CartRepository {
     
-    private readonly firestore: firebase.firestore.Firestore;
+    private readonly settings: FirestoreSettings;
     private readonly collectionName: string;
 
-    constructor(products: ProductRepository, firestore: firebase.firestore.Firestore) {
+    constructor(products: ProductRepository, settings: FirestoreSettings) {
         super(products);
         
-        this.firestore = firestore;
+        this.settings = settings;
         this.collectionName = 'carts';
     }
 
     private get collection(): firebase.firestore.CollectionReference {
-        return this.firestore.collection(this.collectionName);
+        return this.settings.firestore.collection(this.collectionName);
     }
 
     protected async _find(id: string): Promise<CartRepositoryItem> {

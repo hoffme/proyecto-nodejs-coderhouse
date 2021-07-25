@@ -1,6 +1,7 @@
 import CartRepository, { CartFilter, CartRepositoryItem, CreateCartCMD, ItemRepository, UpdateCartCMD } from "../../../core/cart/repository";
 
 import ProductRepository from "../../../core/product/repository";
+import MemorySettings from "../../settings/memory";
 
 import uuid from "../../utils/uuid";
 
@@ -8,7 +9,7 @@ class CartMemoryRepository extends CartRepository {
     
     private items: CartRepositoryItem[];
     
-    constructor(products: ProductRepository) {
+    constructor(products: ProductRepository, settings: MemorySettings) {
         super(products);
 
         this.items = [];

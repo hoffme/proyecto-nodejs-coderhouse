@@ -1,7 +1,7 @@
 import knex, { Knex } from 'knex';
 
 import uuid from '../../utils/uuid';
-import KnexConnection from '../../connections/knex';
+import KnexSettings from '../../settings/knex';
 
 import ProductRepository from '../../../core/product/repository';
 import CartRepository, { CartFilter, CartRepositoryItem, CreateCartCMD, ItemRepository, UpdateCartCMD } from '../../../core/cart/repository';
@@ -18,22 +18,22 @@ interface CartItemsRaw {
 class CartsKnexRepository extends CartRepository {
     
     private readonly tables: { cart: string, item: string }
-    private readonly connection: KnexConnection;
+    private readonly settings: KnexSettings;
 
-    constructor(products: ProductRepository, connection: KnexConnection) {
+    constructor(products: ProductRepository, settings: KnexSettings) {
         super(products);
 
         this.tables = { cart: 'carts', item: 'items_carts' }
-        this.connection = connection;
+        this.settings = settings;
     }
 
-    async execute<T>(commands: (connection: Knex<any, unknown[]>) => Promise<T>): Promise<T> {
-        const connection = knex(this.connection);
+    async execute<T>(commands: (settings: Knex<any, unknown[]>) => Promise<T>): Promise<T> {
+        const settings = knex(this.settings);
 
         try {
-            return await commands(connection)
+            return await commands(settings)
         } finally {
-            await connection.destroy()
+            await settings.destroy()
         }
     }
 

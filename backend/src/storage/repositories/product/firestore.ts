@@ -3,22 +3,23 @@ import firebase from 'firebase';
 import { Product } from '../../../core/product/model';
 
 import ProductRepository, { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../../core/product/repository';
+import FirestoreSettings from '../../settings/firestore';
 import uuid from '../../utils/uuid';
 
 class ProductFirestoreRepository extends ProductRepository {
 
-    private readonly firestore: firebase.firestore.Firestore;
+    private readonly settings: FirestoreSettings;
     private readonly collectionName: string;
 
-    constructor(firestore: firebase.firestore.Firestore) {
+    constructor(settings: FirestoreSettings) {
         super();
         
-        this.firestore = firestore;
+        this.settings = settings;
         this.collectionName = 'products';
     }
 
     private get collection(): firebase.firestore.CollectionReference {
-        return this.firestore.collection(this.collectionName);
+        return this.settings.firestore.collection(this.collectionName);
     }
 
     async find(id: string): Promise<Product> {

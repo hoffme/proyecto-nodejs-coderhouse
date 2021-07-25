@@ -3,20 +3,20 @@ import mongoose, { Schema } from 'mongoose';
 import { Product } from '../../../core/product/model';
 
 import ProductRepository, { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../../core/product/repository';
-import MongooseConnection from '../../connections/mongoose';
+import MongooseSettings from '../../settings/mongoose';
 import uuid from '../../utils/uuid';
 
 class ProductMongooseRepository extends ProductRepository {
 
-    private readonly connection: MongooseConnection;
+    private readonly settings: MongooseSettings;
     private readonly collectionName: string;
     private readonly schema: Schema<Product>;
     private readonly collection: mongoose.Model<Product>;
 
-    constructor(connection: MongooseConnection) {
+    constructor(settings: MongooseSettings) {
         super();
 
-        this.connection = connection;
+        this.settings = settings;
         this.collectionName = 'products';
 
         this.schema = new Schema<Product>({
@@ -36,8 +36,8 @@ class ProductMongooseRepository extends ProductRepository {
     async setup(): Promise<void> {
         await new Promise((resolve, reject) => {
             mongoose.connect(
-                this.connection.uri, 
-                this.connection.options,
+                this.settings.uri, 
+                this.settings.options,
                 (err) => {
                     if (err) reject(err);
                     resolve(undefined);

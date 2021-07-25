@@ -1,3 +1,5 @@
+import BuilderSettings from "./settings";
+
 import ProductRepository from "../../core/product/repository";
 
 import ProductFileRepository from "../repositories/product/file";
@@ -6,20 +8,27 @@ import ProductsKnexRepository from "../repositories/product/knex";
 import ProductMemoryRepository from "../repositories/product/memory";
 import ProductMongooseRepository from "../repositories/product/mongoose";
 
-import firebase from 'firebase';
+import MemorySettings from "../settings/memory";
+import FileSettings from "../settings/file";
+import MongooseSettings from "../settings/mongoose";
+import KnexSettings from "../settings/knex";
+import FirestoreSettings from "../settings/firestore";
 
-type ProductRepositoryType = 'memory' | 'file' | 'mongoose' | 'knex' | 'firebase';
-
-const ProductRepositoryBuilder = async (type: ProductRepositoryType): Promise<ProductRepository> => {
-    const builders: {[key:string]: () => ProductRepository} = {
-        memory: () => new ProductMemoryRepository(),
-        file: () => new ProductFileRepository('./datos/product.json'),
-        mongoose: () => new ProductMongooseRepository({ uri: '', options: {} }),
-        knex: () => new ProductsKnexRepository({}),
-        firebase: () => new ProductFirestoreRepository(firebase.firestore())
+const ProductRepositoryBuilder = async (settings: BuilderSettings): Promise<ProductRepository> => {
+    const builders: {[key:string]: (settings: any) => ProductRepository} = {
+        memory: (settings: MemorySettings) => new ProductMemoryRepository(settings),
+        file: (settings: FileSettings) => new ProductFileRepository(settings),
+        mongoose: (settings: MongooseSettings) => new ProductMongooseRepository(settings),
+        knex: (settings: KnexSettings) => new ProductsKnexRepository(settings),
+        firebase: (settings: FirestoreSettings) => new ProductFirestoreRepository(settings)
     }
 
-    const repository = builders[type]();
+    const type: keyof BuilderSettings = (Object.keys(settings) as Array<keyof typeof settings>)[0];
+    
+    const builder = builders[type];
+    if (!builder) throw new Error('invalid settings');
+
+    const repository = builder(settings[type]);
 
     await repository.setup();
 
@@ -27,4 +36,3 @@ const ProductRepositoryBuilder = async (type: ProductRepositoryType): Promise<Pr
 }
 
 export default ProductRepositoryBuilder;
-export type { ProductRepositoryType }

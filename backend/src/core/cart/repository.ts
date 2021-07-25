@@ -1,4 +1,5 @@
 import EventCore from "../generics/events";
+import { Product } from "../product/model";
 import ProductRepository from "../product/repository";
 
 import { 
@@ -115,8 +116,9 @@ abstract class CartRepository {
         return result;
     }
     
-    private async decode_item(item: ItemRepository): Promise<Item> {
-        const product = await this.products.find(item.product_id);
+    private async decode_item(item: ItemRepository, product?: Product): Promise<Item> {
+        if (!product) product = await this.products.find(item.product_id);        
+        
         return { count: item.count, product };
     }
 
@@ -158,8 +160,10 @@ abstract class CartRepository {
     }
 
     async setItem(cart_id: string, item: ItemRepository): Promise<Item> {
+        const product = await this.products.find(item.product_id);
+
         const item_rep = await this._setItem(cart_id, item);
-        const item_ext = await this.decode_item(item_rep);
+        const item_ext = await this.decode_item(item_rep, product);
     
         this.events.setItem.notify({ cart_id, item: item_ext });
 
@@ -167,8 +171,10 @@ abstract class CartRepository {
     }
 
     async remItem(cart_id: string, product_id: string): Promise<Item> {
+        const product = await this.products.find(product_id);
+
         const item_rep = await this._remItem(cart_id, product_id);
-        const item_ext = await this.decode_item(item_rep);
+        const item_ext = await this.decode_item(item_rep, product);
     
         this.events.remItem.notify({ cart_id, item: item_ext });
 
