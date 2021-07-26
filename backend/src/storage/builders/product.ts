@@ -20,7 +20,7 @@ const ProductRepositoryBuilder = async (settings: BuilderSettings): Promise<Prod
         file: (settings: FileSettings) => new ProductFileRepository(settings),
         mongoose: (settings: MongooseSettings) => new ProductMongooseRepository(settings),
         knex: (settings: KnexSettings) => new ProductsKnexRepository(settings),
-        firebase: (settings: FirestoreSettings) => new ProductFirestoreRepository(settings)
+        firestore: (settings: FirestoreSettings) => new ProductFirestoreRepository(settings)
     }
 
     const type: keyof BuilderSettings = (Object.keys(settings) as Array<keyof typeof settings>)[0];

@@ -19,7 +19,7 @@ class ProductsKnexRepository extends ProductRepository {
     }
 
     async execute<T>(commands: (connection: Knex<any, unknown[]>) => Promise<T>): Promise<T> {
-        const connection = knex(this.settings);
+        const connection = knex(this.settings.connection);
 
         try {
             return await commands(connection)
