@@ -6,15 +6,6 @@ import KnexSettings from '../../settings/knex';
 import ProductRepository from '../../../core/product/repository';
 import CartRepository, { CartFilter, CartRepositoryItem, CreateCartCMD, ItemRepository, UpdateCartCMD } from '../../../core/cart/repository';
 
-interface CartItemsRaw {
-    id: string
-    user_id: string
-    timestamp: Date
-    cart_id: string
-    product_id: string
-    count: number
-}
-
 class CartsKnexRepository extends CartRepository {
     
     private readonly tables: { cart: string, item: string }
@@ -28,7 +19,7 @@ class CartsKnexRepository extends CartRepository {
     }
 
     async execute<T>(commands: (settings: Knex<any, unknown[]>) => Promise<T>): Promise<T> {
-        const settings = knex(this.settings);
+        const settings = knex(this.settings.connection);
 
         try {
             return await commands(settings)
@@ -44,7 +35,7 @@ class CartsKnexRepository extends CartRepository {
                 await conn.schema.createTable(
                     this.tables.cart,
                     async (table: any) => {
-                        table.string('id')
+                        table.string('id').primary()
                         table.dateTime('timestamp')
                         table.string('user_id')
                     }
@@ -58,7 +49,10 @@ class CartsKnexRepository extends CartRepository {
                     async (table: any) => {
                         table.string('cart_id')
                         table.string('product_id')
-                        table.number('count')
+                        table.float('count')
+                        table.foreign('cart_id')
+                            .references('id')
+                            .inTable(this.tables.cart)
                     }
                 );
             }
@@ -66,73 +60,64 @@ class CartsKnexRepository extends CartRepository {
     }
 
     protected async _find(id: String): Promise<CartRepositoryItem> {
-        const rows = await this.execute<CartItemsRaw[]>(async (conn) => {
-            const cartID = this.tables.cart+'.id';
-            const itemCartID = this.tables.item+'.cart_id';
+        const cart = await this.execute<CartRepositoryItem | undefined>(async (conn) => {
+            const carts = await conn(this.tables.cart).select('*').where('id', id)
+            const items = await conn(this.tables.item).select('*').where('cart_id', id);
 
-            return await conn(this.tables.cart)
-                .where(cartID, id)
-                .join(
-                    this.tables.item, 
-                    cartID,
-                    itemCartID
-                )
-        })
+            if (carts.length === 0) return undefined;
 
-        if (rows.length === 0) throw new Error('cart not found');
+            const cart = carts[0];
 
-        const carts = rows.reduce<{[key:string]: CartRepositoryItem}>((carts, cart) => {
-            if (!carts[cart.id]) {
-                carts[cart.id] = {
-                    id: cart.id,
-                    timestamp: cart.timestamp,
-                    user_id: cart.user_id,
-                    items_ref: []
-                }
+            const cartItem: CartRepositoryItem = {
+                id: cart.id,
+                user_id: cart.user_id,
+                timestamp: cart.timestamp,
+                items_ref: items.map(item => {
+                    return {
+                        product_id: item.product_id,
+                        count: item.count
+                    }
+                })
             }
 
-            carts[cart.id].items_ref.push(
-                { product_id: cart.product_id, count: cart.count }
-            );
+            return cartItem;
+        })
 
-            return carts;
-        }, {});
+        if (!cart) throw new Error('cart not found');
 
-        return Object.values(carts)[0];
+        return cart;
     }
 
     protected async _search(filter: CartFilter): Promise<CartRepositoryItem[]> {
-        const rows = await this.execute<CartItemsRaw[]>(async (conn) => {
-            const cartID = this.tables.cart+'.id';
-            const itemCartID = this.tables.item+'.cart_id';
-
-            let query = conn(this.tables.cart)
-            
+        const carts = await this.execute<CartRepositoryItem[]>(async (conn) => {
+            let query = conn(this.tables.cart).select('*')
             if (filter.user_id) query = query.where('user_id', filter.user_id);
+            const carts = await query;
+            
+            const items = await conn(this.tables.item).select('*').whereIn('cart_id', carts.map(cart => cart.id));
 
-            query = query.join(this.tables.item, cartID, itemCartID)
-
-            return await query;
-        })
-
-        const carts = rows.reduce<{[key:string]: CartRepositoryItem}>((carts, cart) => {
-            if (!carts[cart.id]) {
-                carts[cart.id] = {
+            const cartsMap = carts.reduce((result, cart) => {
+                result[cart.id] = {
                     id: cart.id,
-                    timestamp: cart.timestamp,
                     user_id: cart.user_id,
+                    timestamp: cart.timestamp,
                     items_ref: []
                 }
-            }
 
-            carts[cart.id].items_ref.push(
-                { product_id: cart.product_id, count: cart.count }
-            );
+                return result;
+            }, {});
 
-            return carts;
-        }, {});
+            items.forEach(item => {
+                const cart = cartsMap[item.cart_id];
+                if (!cart) return;
 
-        return Object.values(carts);
+                cart.items_ref.push(item);
+            })
+
+            return Object.values(cartsMap);
+        })
+
+        return carts;
     }
 
     protected async _create(cmd: CreateCartCMD): Promise<CartRepositoryItem> {
@@ -170,21 +155,25 @@ class CartsKnexRepository extends CartRepository {
     }
 
     protected async _clear(id: string): Promise<CartRepositoryItem> {
-        const row = await this.execute<CartItemsRaw | undefined>(async (conn): Promise<CartItemsRaw | undefined> => {
+        const cart = await this.execute<CartRepositoryItem | undefined>(async (conn): Promise<CartRepositoryItem | undefined> => {
             await conn.table(this.tables.item).where('cart_id', id).delete();
 
-            const rows: CartItemsRaw[] = await conn.table(this.tables.cart).where('id', id).limit(1);
+            const rows = await conn.table(this.tables.cart).where('id', id).limit(1);
 
-            return rows[0];
+            const cart = rows[0];
+
+            const cartItem: CartRepositoryItem = {
+                id: cart.id,
+                user_id: cart.user_id,
+                timestamp: cart.timestamp,
+                items_ref: []
+            }
+
+            return cartItem;
         })
-        if (!row) throw new Error('cart not found');
+        if (!cart) throw new Error('cart not found');
 
-        return {
-            id: row.id,
-            user_id: row.user_id,
-            timestamp: row.timestamp,
-            items_ref: [] 
-        }
+        return cart
     }
 
     protected async _setItem(id: string, item: ItemRepository): Promise<ItemRepository> {
@@ -196,7 +185,7 @@ class CartsKnexRepository extends CartRepository {
             }
 
             const items = await conn(this.tables.item)
-                .select('id')
+                .select('*')
                 .where('cart_id', itemRaw.cart_id)
                 .where('product_id', itemRaw.product_id)
         

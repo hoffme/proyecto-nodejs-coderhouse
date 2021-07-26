@@ -4,17 +4,32 @@ import CartRepository, { CartFilter, CartRepositoryItem, CreateCartCMD, ItemRepo
 import ProductRepository from '../../../core/product/repository';
 
 import MongooseSettings from '../../settings/mongoose';
-import uuid from '../../utils/uuid';
+
+interface CartMongoose {
+    _id: mongoose.Types.ObjectId
+    timestamp: Date
+    user_id: string
+    items_ref: ItemRepository[]
+}
+
+const toModel = (data: CartMongoose): CartRepositoryItem => {
+    return  {
+        id: data._id?.toHexString() || '',
+        timestamp: data.timestamp,
+        user_id: data.user_id?.toString() || '',
+        items_ref: data.items_ref || undefined
+    }
+}
 
 class CartMongooseRepository extends CartRepository {
     
     private readonly settings: MongooseSettings;
     private readonly collectionName: string;
 
-    private readonly collection: mongoose.Model<CartRepositoryItem>;
+    private readonly collection: mongoose.Model<CartMongoose>;
 
     private readonly itemSchema: Schema<ItemRepository>;
-    private readonly schema: Schema<CartRepositoryItem>;
+    private readonly schema: Schema<CartMongoose>;
 
     constructor(products: ProductRepository, settings: MongooseSettings) {
         super(products);
@@ -26,8 +41,7 @@ class CartMongooseRepository extends CartRepository {
             product_id: String,
             count: Number
         });
-        this.schema = new Schema<CartRepositoryItem>({
-            id: mongoose.Types.ObjectId,
+        this.schema = new Schema<CartMongoose>({
             timestamp: Date,
             user_id: String,
             items_ref: [this.itemSchema]
@@ -52,7 +66,7 @@ class CartMongooseRepository extends CartRepository {
         const cart = await this.collection.findById(id);
         if (!cart) throw new Error('cart not found');
 
-        return cart;
+        return toModel(cart);
     }
 
     protected async _search(filter: CartFilter): Promise<CartRepositoryItem[]> {
@@ -61,45 +75,44 @@ class CartMongooseRepository extends CartRepository {
         if (filter.user_id) mongooseFilter.user_id = { $eq: filter.user_id };
 
         const carts = await this.collection.find(mongooseFilter);
-        return carts;
+        return carts.map(cart => toModel(cart));
     }
 
     protected async _create(cmd: CreateCartCMD): Promise<CartRepositoryItem> {
-        const cart: CartRepositoryItem = {
-            id: uuid(),
+        const inserted = await this.collection.create({
             timestamp: new Date(),
             items_ref: [],
             ...cmd
-        }
+        });
 
-        const inserted = await this.collection.create(cart);
-
-        return inserted;
+        return toModel(inserted);
     }
 
     protected async _update(id: string, cmd: UpdateCartCMD): Promise<CartRepositoryItem> {
-        const cart = await this._find(id);
+        const cart = await this.collection.findById(id);
+        if (!cart) throw new Error('cart not found');
 
-        await this.collection.updateOne({id}, {
-            $set: { ...cart, ...cmd },
-        });
+        cart.user_id = cmd.user_id || cart.user_id;
 
-        return cart;
+        await cart.save();
+
+        return toModel(cart);
     }
 
     protected async _clear(id: string): Promise<CartRepositoryItem> {
-        const cart: CartRepositoryItem = {
-            ...(await this._find(id)),
-            items_ref: []
-        }
+        const cart = await this.collection.findById(id);
+        if (!cart) throw new Error('cart not found');
 
-        await this.collection.updateOne({id}, { $set: cart });
+        cart.items_ref = [];
 
-        return cart;
+        await cart.save();
+
+        return toModel(cart);
     }
 
     protected async _setItem(id: string, item: ItemRepository): Promise<ItemRepository> {
-        const cart = await this._find(id);
+        const cart = await this.collection.findById(id);
+        if (!cart) throw new Error('cart not found');
         
         let added = false;
         cart.items_ref = cart.items_ref.map(item => {
@@ -111,13 +124,14 @@ class CartMongooseRepository extends CartRepository {
 
         if (!added) cart.items_ref.push(item);
         
-        await this.collection.updateOne({id}, { $set: cart });
+        await cart.save();
 
         return item;
     }
 
     protected async _remItem(id: string, product_id: string): Promise<ItemRepository> {
-        const cart = await this._find(id);
+        const cart = await this.collection.findById(id);
+        if (!cart) throw new Error('cart not found');
         
         let result: ItemRepository | undefined;
         cart.items_ref = cart.items_ref.filter(item => {
@@ -129,7 +143,7 @@ class CartMongooseRepository extends CartRepository {
 
         if (!result) throw new Error('item not found');
     
-        await this.collection.updateOne({id}, { $set: cart });
+        await cart.save();
 
         return result;
     }

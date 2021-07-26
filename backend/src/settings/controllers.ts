@@ -4,8 +4,8 @@ import ControllerSettings from "../controllers/settings";
 
 const controllerSettings: ControllerSettings = {
     product: {
-        memory: {},
-        // file: { path: './datos/products.json' },
+        // memory: {},
+        file: { path: './datos/products.json' },
         // mongoose: {
         //     uri: 'mongodb+srv://hoffme:FeZb13392128@db.jdimd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
         //     options: {}
@@ -27,10 +27,27 @@ const controllerSettings: ControllerSettings = {
         // }
     },
     cart: {
-        mongoose: {
-            uri: 'mongodb+srv://hoffme:FeZb13392128@db.jdimd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-            options: {}
-        }
+        // memory: {},
+        file: { path: './datos/cart.json' },
+        // mongoose: {
+        //     uri: 'mongodb+srv://hoffme:FeZb13392128@db.jdimd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+        //     options: {}
+        // }
+        // knex: {
+        //     connection: {
+        //         client: 'mysql',
+        //         connection: {
+        //             host: '127.0.0.1',
+        //             database: 'ecommerce',
+        //             user: 'hoffme',
+        //             password: 'FeZb13392128'
+        //         },
+        //         debug: true
+        //     }
+        // }
+        // firestore: {
+        //     firestore: firestore
+        // }
     }
 }
 

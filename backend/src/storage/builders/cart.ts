@@ -21,7 +21,7 @@ const CartRepositoryBuilder = async (products: ProductRepository, settings: Buil
         file: (settings: FileSettings) => new CartFileRepository(products, settings),
         mongoose: (settings: MongooseSettings) => new CartMongooseRepository(products, settings),
         knex: (settings: KnexSettings) => new CartsKnexRepository(products, settings),
-        firebase: (settings: FirestoreSettings) => new CartFirestoreRepository(products, settings)
+        firestore: (settings: FirestoreSettings) => new CartFirestoreRepository(products, settings)
     }
 
     const type: keyof BuilderSettings = (Object.keys(settings) as Array<keyof typeof settings>)[0];
