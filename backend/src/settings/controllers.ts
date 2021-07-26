@@ -2,13 +2,17 @@ import ControllerSettings from "../controllers/settings";
 
 const controllerSettings: ControllerSettings = {
     product: {
-        file: {
-            path: './datos/products.json'
+        // memory: {},
+        // file: { path: './datos/products.json' },
+        mongoose: {
+            uri: 'mongodb+srv://hoffme:FeZb13392128@db.jdimd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+            options: {}
         }
     },
     cart: {
-        file: {
-            path: './datos/cart.json'
+        mongoose: {
+            uri: 'mongodb+srv://hoffme:FeZb13392128@db.jdimd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+            options: {}
         }
     }
 }
