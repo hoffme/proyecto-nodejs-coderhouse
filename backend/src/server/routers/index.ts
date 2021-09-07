@@ -44,7 +44,7 @@ passport.deserializeUser((id: string, done) => {
 const createRouter = async (settings: RouterSettings) => {
     const app = express();
 
-    app.use('/static', express.static('./public'));
+    app.use('/', express.static('./public'));
 
     app.use(json());
     app.use(urlencoded({ extended: false }));

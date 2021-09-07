@@ -30,7 +30,7 @@ router.put('/avatar', auth('client'), upload.single('avatar'), asyncHandler(asyn
     if (!req.file) throw new Error('cannot upload avatar');
 
     const update = await Controllers.user.update(user_id, {
-        avatar: `/static/images/${req.file.filename}`
+        avatar: `/images/${req.file.filename}`
     });
 
     return update;
