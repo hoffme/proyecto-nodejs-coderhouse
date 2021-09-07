@@ -1,6 +1,7 @@
-import express, { json } from 'express';
-import { urlencoded } from 'body-parser';
+import express from 'express';
+import { urlencoded, json } from 'body-parser';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import session from 'express-session';
 import passport from 'passport';
 import { Strategy as PassportLocal } from 'passport-local';
@@ -44,10 +45,12 @@ passport.deserializeUser((id: string, done) => {
 const createRouter = async (settings: RouterSettings) => {
     const app = express();
 
+    app.use(cors());
+
     app.use('/', express.static('./public'));
 
-    app.use(json());
     app.use(urlencoded({ extended: false }));
+    app.use(json());
     app.use(cookieParser(settings.session_secret));
     app.use(session({
         secret: settings.session_secret,       
