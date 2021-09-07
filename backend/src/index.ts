@@ -1,30 +1,11 @@
-import express from 'express';
-import { Server } from 'http';
+import Controllers from './controllers';
+import Server from './server';
 
-import Controllers from './controllers/index';
-import controllerSettings from './settings/controllers';
-
-import apiRouter from './routers/api';
+import settings from './settings';
 
 (async () => {
-    // constants
-    const PORT = process.env.PORT || 8080;
+    await Controllers.setup(settings.controllers);
+    await Server.setup(settings.server);
 
-    // Setups controllers
-    await Controllers.setup(controllerSettings);
-
-    // create app
-    const app = express();
-    const http = new Server(app);
-
-    // public folder
-    app.use(express.static('../public'));
-
-    // api routes
-    app.use('/api', apiRouter);
-
-    // initialize server 
-    http.listen(PORT, () => {
-        console.log(`Listening on http://localhost:${PORT}`);
-    })
+    Server.start();
 })()

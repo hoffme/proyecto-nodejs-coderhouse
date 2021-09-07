@@ -48,6 +48,14 @@ const controllerSettings: ControllerSettings = {
         // firestore: {
         //     firestore: firestore
         // }
+    },
+    user: {
+        // memory: {},
+        file: { path: './datos/user.json' },
+        // mongoose: {
+        //     uri: 'mongodb+srv://hoffme:FeZb13392128@db.jdimd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+        //     options: {}
+        // }
     }
 }
 

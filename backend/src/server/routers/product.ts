@@ -3,8 +3,8 @@ import { Router } from 'express';
 import auth from './middlewares/auth';
 import wrap from './utils/wrap';
 
-import Controllers from '../controllers';
-import { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../core/product/repository';
+import Controllers from '../../controllers';
+import { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../core/product/repository';
 
 const router = Router();
 

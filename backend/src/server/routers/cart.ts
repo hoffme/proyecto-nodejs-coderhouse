@@ -3,13 +3,13 @@ import { Router } from 'express';
 import auth from './middlewares/auth';
 import wrap from './utils/wrap';
 
-import Controllers from '../controllers/index';
-import { ItemRepository, UpdateCartCMD } from '../core/cart/repository';
+import Controllers from '../../controllers/index';
+import { ItemRepository } from '../../core/cart/repository';
 
 const router = Router();
 
-router.get('/:user_id', auth('client'), wrap(async req => {
-    const user_id = req.params.user_id;
+router.get('/', auth('client'), wrap(async req => {
+    const user_id = req.user?.id || '';
     
     const carts = await Controllers.cart.search({ user_id });
     if (carts.length > 0) return carts[0];
@@ -17,8 +17,8 @@ router.get('/:user_id', auth('client'), wrap(async req => {
     return await Controllers.cart.create({ user_id });
 }));
 
-router.delete('/:user_id', auth('client'), wrap(async req => {
-    const user_id: string = req.params.user_id; 
+router.delete('/', auth('client'), wrap(async req => {
+    const user_id = req.user?.id || '';
     
     const carts = await Controllers.cart.search({ user_id });
     if (carts.length === 0) throw new Error('cart not found');
@@ -28,8 +28,8 @@ router.delete('/:user_id', auth('client'), wrap(async req => {
     return await Controllers.cart.clear(cart.id);
 }));
 
-router.post('/:user_id/products', auth('client'), wrap(async req => {
-    const user_id: string = req.params.user_id; 
+router.post('/products', auth('client'), wrap(async req => {
+    const user_id = req.user?.id || '';
 
     const carts = await Controllers.cart.search({ user_id });
     if (carts.length === 0) throw new Error('cart not found');
@@ -41,8 +41,8 @@ router.post('/:user_id/products', auth('client'), wrap(async req => {
     return await Controllers.cart.setItem(cart.id, itemRepository);
 }));
 
-router.delete('/:user_id/products/:product_id', auth('client'), wrap(async req => {
-    const user_id: string = req.params.user_id; 
+router.delete('/products/:product_id', auth('client'), wrap(async req => {
+    const user_id = req.user?.id || '';
     
     const carts = await Controllers.cart.search({ user_id });
     if (carts.length === 0) throw new Error('cart not found');

@@ -5,6 +5,8 @@ import LoggerMiddleware from './middlewares/logger';
 
 import ProductRouter from './product';
 import CartRouter from './cart';
+import AuthRouter from './auth';
+
 import wrap from './utils/wrap';
 
 const router = Router();
@@ -23,6 +25,7 @@ router.get('/ping', wrap(async () => 'pong'));
 
 router.use('/product', ProductRouter);
 router.use('/cart', CartRouter);
+router.use('/auth', AuthRouter);
 
 // middleware errors
 
