@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import successResponse from "../responses/success";
 
-const wrap = (handler: (req: Request) => Promise<any>) => {
+const asyncHandler = (handler: (req: Request) => Promise<any>) => {
     return (req: Request, res: Response, next: NextFunction) => {
         handler(req)
             .then(result => successResponse(res, result))
@@ -10,4 +10,4 @@ const wrap = (handler: (req: Request) => Promise<any>) => {
     }
 }
 
-export default wrap;
+export default asyncHandler;

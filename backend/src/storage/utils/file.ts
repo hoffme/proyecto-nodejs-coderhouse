@@ -16,7 +16,7 @@ class FileStorage<T> {
         
         try {
             return await fs.promises.writeFile(this.path, text);
-        } catch (e) {
+        } catch (e: any) {
             if (e.code !== 'ENOENT') throw e;
 
             const route = this.path.split('/');

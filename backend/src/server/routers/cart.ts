@@ -1,14 +1,14 @@
 import { Router } from 'express';
 
 import auth from './middlewares/auth';
-import wrap from './utils/wrap';
+import asyncHandler from './utils/wrap';
 
 import Controllers from '../../controllers/index';
 import { ItemRepository } from '../../core/cart/repository';
 
 const router = Router();
 
-router.get('/', auth('client'), wrap(async req => {
+router.get('/', auth('client'), asyncHandler(async req => {
     const user_id = req.user?.id || '';
     
     const carts = await Controllers.cart.search({ user_id });
@@ -17,7 +17,7 @@ router.get('/', auth('client'), wrap(async req => {
     return await Controllers.cart.create({ user_id });
 }));
 
-router.delete('/', auth('client'), wrap(async req => {
+router.delete('/', auth('client'), asyncHandler(async req => {
     const user_id = req.user?.id || '';
     
     const carts = await Controllers.cart.search({ user_id });
@@ -28,7 +28,7 @@ router.delete('/', auth('client'), wrap(async req => {
     return await Controllers.cart.clear(cart.id);
 }));
 
-router.post('/products', auth('client'), wrap(async req => {
+router.post('/products', auth('client'), asyncHandler(async req => {
     const user_id = req.user?.id || '';
 
     const carts = await Controllers.cart.search({ user_id });
@@ -41,7 +41,7 @@ router.post('/products', auth('client'), wrap(async req => {
     return await Controllers.cart.setItem(cart.id, itemRepository);
 }));
 
-router.delete('/products/:product_id', auth('client'), wrap(async req => {
+router.delete('/products/:product_id', auth('client'), asyncHandler(async req => {
     const user_id = req.user?.id || '';
     
     const carts = await Controllers.cart.search({ user_id });
