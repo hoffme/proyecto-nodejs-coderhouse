@@ -1,7 +1,10 @@
 import controllerSettings from "./controllers";
 import serverSettings from "./server";
 
-const settings = {
+import Settings from "./type";
+
+const settings: Settings = {
+    cluster: true,
     controllers: controllerSettings,
     server: serverSettings
 }
