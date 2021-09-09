@@ -6,7 +6,7 @@ import session from 'express-session';
 import passport from 'passport';
 import { Strategy as PassportLocal } from 'passport-local';
 
-import { User as UserModel } from '../../core/user/model';
+import { UserModel } from '../../core/user/model';
 
 import Controllers from '../../controllers/index';
 
@@ -27,7 +27,7 @@ passport.use(new PassportLocal(
     (username, password, done) => {
         Controllers.user.verify(username, password)
             .then(user => done(null, user))
-            .catch(err => done(err, null))
+            .catch(err => done(err, null, err))
     }
 ));
 
@@ -49,13 +49,13 @@ const createRouter = async (settings: RouterSettings) => {
 
     app.use('/', express.static('./public'));
 
-    app.use(urlencoded({ extended: false }));
     app.use(json());
+    app.use(urlencoded({ extended: true }));
     app.use(cookieParser(settings.session_secret));
     app.use(session({
-        secret: settings.session_secret,       
-        resave: true,
-        saveUninitialized: true
+        secret: settings.session_secret,
+        resave: false,
+        saveUninitialized: false,
     }));
     
     app.use(passport.initialize());

@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import multer from 'multer';
 
-import auth from './middlewares/auth';
-import asyncHandler from './utils/wrap';
+import auth from '../middlewares/auth';
+import asyncHandler from '../utils/wrap';
 
-import Controllers from '../../controllers';
-import { UpdateUserCMD } from '../../core/user/repository';
+import Controllers from '../../../controllers';
+import { UpdateUser } from '../../../core/user/model';
 
 const router = Router();
 
@@ -38,7 +38,7 @@ router.put('/avatar', auth('client'), upload.single('avatar'), asyncHandler(asyn
 
 router.put('/', auth('client'), asyncHandler(async req => {
     const user_id = req.user?.id || '';
-    const fields: UpdateUserCMD = req.body;
+    const fields: UpdateUser = req.body;
 
     const update = await Controllers.user.update(user_id, fields);
 

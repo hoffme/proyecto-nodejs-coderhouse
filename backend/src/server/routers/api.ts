@@ -3,10 +3,10 @@ import { Router } from 'express';
 import ErrorsMiddleware from './middlewares/error';
 import LoggerMiddleware from './middlewares/logger';
 
-import AuthRouter from './auth';
-import UserRouter from './user';
-import ProductRouter from './product';
-import CartRouter from './cart';
+import AuthRouter from './endpoints/auth';
+import UserRouter from './endpoints/user';
+import ProductRouter from './endpoints/product';
+import CartRouter from './endpoints/cart';
 
 import asyncHandler from './utils/wrap';
 

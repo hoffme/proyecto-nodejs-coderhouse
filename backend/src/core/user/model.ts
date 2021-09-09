@@ -16,7 +16,7 @@ interface User {
     hash: string
 }
 
-interface CreateUser {
+interface UserModel {
     id: string
     name: string
     lastname: string
@@ -31,10 +31,37 @@ interface CreateUser {
         number: string
         aditional: string
     }
+}
+
+interface UpdateUser {
+    name?: string
+    lastname?: string
+    email?: string
+    phone?: string
+    age?: string
+    avatar?: string
+    address?: {
+        country?: string
+        city?: string
+        street?: string
+        number?: string
+        aditional?: string
+    }
+}
+
+interface CreateUser {
+    id: string
+    name: string
+    lastname: string
+    email: string
+    phone: string
+    age: string
     password: string
 }
 
 export type {
     User,
+    UserModel,
+    UpdateUser,
     CreateUser
 }

@@ -1,10 +1,10 @@
 import { Router } from 'express';
 
-import auth from './middlewares/auth';
-import asyncHandler from './utils/wrap';
+import auth from '../middlewares/auth';
+import asyncHandler from '../utils/wrap';
 
-import Controllers from '../../controllers/index';
-import { ItemRepository } from '../../core/cart/repository';
+import Controllers from '../../../controllers/index';
+import { ItemRepository } from '../../../core/cart/repository';
 
 const router = Router();
 

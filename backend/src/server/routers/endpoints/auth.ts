@@ -2,15 +2,16 @@ import { Router } from 'express';
 
 import passport from 'passport';
 
-import Controllers from '../../controllers/index';
+import Controllers from '../../../controllers/index';
 
-import { CreateUser } from '../../core/user/model';
+import { CreateUser } from '../../../core/user/model';
 
-import asyncHandler from './utils/wrap';
+import successResponse from '../responses/success';
+import asyncHandler from '../utils/wrap';
 
 const router = Router();
 
-router.post('/signin', passport.authenticate('local'), asyncHandler(async () => true));
+router.post('/signin', passport.authenticate('local', { failureFlash: true }), (req, res) => successResponse(res, true));
 
 router.post('/signup', asyncHandler(async (req) => {    
     const cmd: CreateUser = req.body;
