@@ -44,6 +44,14 @@ class CartController {
         return await this.repository.update(id, update);
     }
 
+    async finish(id: string): Promise<Cart> {
+        const cart = await this.repository.find(id);
+
+        // TODO: guardar en otra coleccion de ordenes
+
+        return cart;
+    }
+
     async clear(id: string): Promise<Cart> {
         return await this.repository.clear(id);
     }

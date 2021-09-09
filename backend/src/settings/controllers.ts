@@ -56,6 +56,10 @@ const controllerSettings: ControllerSettings = {
         //     uri: 'mongodb+srv://hoffme:FeZb13392128@db.jdimd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
         //     options: {}
         // }
+    },
+    notificator: {
+        senders: {},
+        reciver: {}
     }
 }
 

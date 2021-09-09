@@ -15,7 +15,10 @@ router.post('/signin', passport.authenticate('local', { failureFlash: true }), (
 
 router.post('/signup', asyncHandler(async (req) => {    
     const cmd: CreateUser = req.body;
-    await Controllers.user.create(cmd);
+    
+    const user = await Controllers.user.create(cmd);
+    Controllers.notifier.registerUser(user);
+
     return true;
 }))
 

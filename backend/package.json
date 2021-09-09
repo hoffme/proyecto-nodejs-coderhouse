@@ -25,8 +25,10 @@
     "@types/cors": "^2.8.12",
     "@types/express-session": "^1.17.4",
     "@types/multer": "^1.4.7",
+    "@types/nodemailer": "^6.4.4",
     "@types/passport": "^1.0.7",
     "@types/passport-local": "^1.0.34",
+    "@types/twilio": "^3.19.3",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
@@ -39,7 +41,9 @@
     "mongoose": "^5.13.3",
     "multer": "^1.4.3",
     "mysql": "^2.18.1",
+    "nodemailer": "^6.6.3",
     "passport": "^0.4.1",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "twilio": "^3.67.2"
   }
 }

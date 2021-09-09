@@ -1,6 +1,7 @@
 import ProductsController from "./product";
 import CartController from "./cart";
 import UserController from "./user";
+import NotifierController from "./notificator";
 
 import ProductRepositoryBuilder from "../storage/builders/product";
 import CartRepositoryBuilder from "../storage/builders/cart";
@@ -13,6 +14,7 @@ class Controllers {
     static user: UserController;
     static products: ProductsController;
     static cart: CartController;
+    static notifier: NotifierController;
 
     static async setup(settings: ControllerSettings) {
         const userRepository = await UserRepositoryBuilder(settings.user);
@@ -23,6 +25,8 @@ class Controllers {
         
         const cartRepository = await CartRepositoryBuilder(productRepository, settings.cart);        
         Controllers.cart = new CartController(cartRepository);
+    
+        Controllers.notifier = new NotifierController(settings.notificator);
     }
 }
 

@@ -4,7 +4,7 @@ import serverSettings from "./server";
 import Settings from "./type";
 
 const settings: Settings = {
-    cluster: true,
+    cluster: false,
     controllers: controllerSettings,
     server: serverSettings
 }

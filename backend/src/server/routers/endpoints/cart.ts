@@ -54,4 +54,19 @@ router.delete('/products/:product_id', auth('client'), asyncHandler(async req =>
     return await Controllers.cart.remItem(cart.id, product_id);
 }));
 
+router.post('/finish', auth('client'), asyncHandler(async req => {
+    const user_id = req.user?.id || '';
+
+    const carts = await Controllers.cart.search({ user_id });
+    if (carts.length === 0) throw new Error('cart not found');
+    
+    const cart = carts[0];
+    
+    const cartFinished = await Controllers.cart.finish(cart.id);
+
+    Controllers.notifier.orderCreated(req.user!, cartFinished);
+
+    return true;
+}));
+
 export default router;
