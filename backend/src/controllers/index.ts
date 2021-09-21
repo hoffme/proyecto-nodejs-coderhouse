@@ -3,9 +3,9 @@ import CartController from "./cart";
 import UserController from "./user";
 import NotifierController from "./notificator";
 
-import ProductRepositoryBuilder from "../storage/builders/product";
-import CartRepositoryBuilder from "../storage/builders/cart";
-import UserRepositoryBuilder from "../storage/builders/user";
+import ProductRepositoryFactory from "../storage/factories/product";
+import CartRepositoryFactory from "../storage/factories/cart";
+import UserRepositoryFactory from "../storage/factories/user";
 
 import ControllerSettings from "./settings";
 
@@ -17,15 +17,13 @@ class Controllers {
     static notifier: NotifierController;
 
     static async setup(settings: ControllerSettings) {
-        const userRepository = await UserRepositoryBuilder(settings.user);
-        Controllers.user = new UserController(userRepository)
+        await UserRepositoryFactory.build(settings.user);
+        await ProductRepositoryFactory.build(settings.product);
+        await CartRepositoryFactory.build(ProductRepositoryFactory.repository, settings.cart);
 
-        const productRepository = await ProductRepositoryBuilder(settings.product);
-        Controllers.products = new ProductsController(productRepository);
-        
-        const cartRepository = await CartRepositoryBuilder(productRepository, settings.cart);        
-        Controllers.cart = new CartController(cartRepository);
-    
+        Controllers.user = new UserController(UserRepositoryFactory.repository)
+        Controllers.products = new ProductsController(ProductRepositoryFactory.repository);
+        Controllers.cart = new CartController(CartRepositoryFactory.repository);
         Controllers.notifier = new NotifierController(settings.notificator);
     }
 }

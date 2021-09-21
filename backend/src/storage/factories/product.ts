@@ -14,8 +14,11 @@ import MongooseSettings from "../settings/mongoose";
 import KnexSettings from "../settings/knex";
 import FirestoreSettings from "../settings/firestore";
 
-const ProductRepositoryBuilder = async (settings: BuilderSettings): Promise<ProductRepository> => {
-    const builders: {[key:string]: (settings: any) => ProductRepository} = {
+class ProductRepositoryFactory {
+
+    static repository: ProductRepository;
+
+    private static readonly repositories: {[key:string]: (settings: any) => ProductRepository} = {
         memory: (settings: MemorySettings) => new ProductMemoryRepository(settings),
         file: (settings: FileSettings) => new ProductFileRepository(settings),
         mongoose: (settings: MongooseSettings) => new ProductMongooseRepository(settings),
@@ -23,16 +26,21 @@ const ProductRepositoryBuilder = async (settings: BuilderSettings): Promise<Prod
         firestore: (settings: FirestoreSettings) => new ProductFirestoreRepository(settings)
     }
 
-    const type: keyof BuilderSettings = (Object.keys(settings) as Array<keyof typeof settings>)[0];
+    static async build(settings: BuilderSettings): Promise<ProductRepository> {
+        const type: keyof BuilderSettings = (Object.keys(settings) as Array<keyof typeof settings>)[0];
     
-    const builder = builders[type];
-    if (!builder) throw new Error('invalid settings');
+        const builder = this.repositories[type];
+        if (!builder) throw new Error('invalid settings');
 
-    const repository = builder(settings[type]);
+        const repository = builder(settings[type]);
 
-    await repository.setup();
+        await repository.setup();
 
-    return repository;
+        this.repository = repository;
+
+        return repository;
+    }
+
 }
 
-export default ProductRepositoryBuilder;
+export default ProductRepositoryFactory;

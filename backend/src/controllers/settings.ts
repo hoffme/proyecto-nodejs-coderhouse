@@ -1,4 +1,4 @@
-import BuilderSettings from "../storage/builders/settings";
+import BuilderSettings from "../storage/factories/settings";
 import { NotifierSettings } from "./notificator";
 
 interface ControllerSettings {
