@@ -1,19 +1,16 @@
 import firebase from 'firebase';
 
-import { Product } from '../../../core/product/model';
+import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../core/product/dao';
 
-import ProductRepository, { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../../core/product/repository';
 import FirestoreSettings from '../../settings/firestore';
 import uuid from '../../utils/uuid';
 
-class ProductFirestoreRepository extends ProductRepository {
+class ProductFirestoreRepository implements ProductDAO {
 
     private readonly settings: FirestoreSettings;
     private readonly collectionName: string;
 
     constructor(settings: FirestoreSettings) {
-        super();
-        
         this.settings = settings;
         this.collectionName = 'products';
     }
@@ -22,12 +19,12 @@ class ProductFirestoreRepository extends ProductRepository {
         return this.settings.firestore.collection(this.collectionName);
     }
 
-    async find(id: string): Promise<Product> {
+    async find(id: string): Promise<ProductDTO> {
         const productRef = await this.collection.doc(id).get();
         if (!productRef || !productRef.exists) throw new Error("product not found");
 
         const productData = productRef.data() || {};
-        const product: Product = {
+        const product: ProductDTO = {
             id: productRef.id,
             timestamp: productData.timestamp, 
             name: productData.name, 
@@ -41,7 +38,7 @@ class ProductFirestoreRepository extends ProductRepository {
         return product;
     }
     
-    async search(filter: FilterProduct): Promise<Product[]> {
+    async search(filter: FilterProductCMD): Promise<ProductDTO[]> {
         let query = this.collection.where("id", "!=", null);
 
         if (filter.ids) query = query.where("id", "in", filter.ids)
@@ -71,8 +68,8 @@ class ProductFirestoreRepository extends ProductRepository {
         });
     }
 
-    async create(cmd: CreateProductCMD): Promise<Product> {
-        const product: Product = {
+    async create(cmd: CreateProductCMD): Promise<ProductDTO> {
+        const product: ProductDTO = {
             id: uuid(),
             timestamp: new Date(),
             ...cmd
@@ -80,12 +77,10 @@ class ProductFirestoreRepository extends ProductRepository {
 
         await this.collection.doc(product.id).set(product);
 
-        this.events.create.notify(product);
-
         return product;
     }
 
-    async update(id: string, cmd: UpdateProductCMD): Promise<Product> {
+    async update(id: string, cmd: UpdateProductCMD): Promise<ProductDTO> {
         const update = {
             ...(await this.find(id)),
             ...cmd
@@ -93,17 +88,13 @@ class ProductFirestoreRepository extends ProductRepository {
 
         await this.collection.doc(id).set(update)
 
-        this.events.update.notify(update);
-
         return update;
     }
 
-    async delete(id: string): Promise<Product> {
+    async delete(id: string): Promise<ProductDTO> {
         const product = await this.find(id);
 
         await this.collection.doc(id).delete();
-
-        this.events.delete.notify(product);
 
         return product;
     }

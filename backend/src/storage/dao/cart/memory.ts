@@ -1,28 +1,25 @@
-import CartRepository, { CartFilter, CartRepositoryItem, CreateCartCMD, ItemRepository, UpdateCartCMD } from "../../../core/cart/repository";
+import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../core/cart/dao';
 
-import ProductRepository from "../../../core/product/repository";
 import MemorySettings from "../../settings/memory";
 
 import uuid from "../../utils/uuid";
 
-class CartMemoryRepository extends CartRepository {
+class CartMemoryDAO implements CartDAO {
     
-    private items: CartRepositoryItem[];
+    private items: CartDTO[];
     
-    constructor(products: ProductRepository, settings: MemorySettings) {
-        super(products);
-
+    constructor(settings: MemorySettings) {
         this.items = [];
     }
     
-    protected async _find(id: String): Promise<CartRepositoryItem> {
+    async find(id: String): Promise<CartDTO> {
         const result = this.items.find(item => item.id === id);
         if (!result) throw new Error('cart not found');
 
         return result;
     }
     
-    protected async _search(filter: CartFilter): Promise<CartRepositoryItem[]> {
+    async search(filter: FilterCartCMD): Promise<CartDTO[]> {
         return this.items.filter(item => {
             if (filter.user_id && filter.user_id !== item.user_id) return false;
             
@@ -30,8 +27,8 @@ class CartMemoryRepository extends CartRepository {
         })
     }
     
-    protected async _create(cmd: CreateCartCMD): Promise<CartRepositoryItem> {
-        const cart: CartRepositoryItem = {
+    async create(cmd: CreateCartCMD): Promise<CartDTO> {
+        const cart: CartDTO = {
             id: uuid(),
             timestamp: new Date(),
             items_ref: [],
@@ -43,9 +40,9 @@ class CartMemoryRepository extends CartRepository {
         return cart;
     }
     
-    protected async _update(id: string, cmd: UpdateCartCMD): Promise<CartRepositoryItem> {
+    async update(id: string, cmd: UpdateCartCMD): Promise<CartDTO> {
         const cartUpdated = {
-            ...(await this._find(id)),
+            ...(await this.find(id)),
             ...cmd
         }
 
@@ -56,8 +53,8 @@ class CartMemoryRepository extends CartRepository {
         return cartUpdated;
     }
 
-    protected async _clear(id: string): Promise<CartRepositoryItem> {
-        let result: CartRepositoryItem | undefined;
+    async clear(id: string): Promise<CartDTO> {
+        let result: CartDTO | undefined;
         
         this.items.forEach(cart => {
             if (cart.id !== id) return;
@@ -70,8 +67,8 @@ class CartMemoryRepository extends CartRepository {
         return result;        
     }
     
-    protected async _setItem(id: string, item: ItemRepository): Promise<ItemRepository> {
-        const cart = await this._find(id);
+    async setItem(id: string, item: ItemDTO): Promise<ItemDTO> {
+        const cart = await this.find(id);
         
         let added = false;
         cart.items_ref = cart.items_ref.map(item => {
@@ -88,10 +85,10 @@ class CartMemoryRepository extends CartRepository {
         return item;
     }
 
-    protected async _remItem(id: string, product_id: string): Promise<ItemRepository> {
-        const cart = await this._find(id);
+    async remItem(id: string, product_id: string): Promise<ItemDTO> {
+        const cart = await this.find(id);
 
-        let result: ItemRepository | undefined;
+        let result: ItemDTO | undefined;
         cart.items_ref = cart.items_ref.filter(item => {
             if (item.product_id !== product_id) return true;
 
@@ -107,4 +104,4 @@ class CartMemoryRepository extends CartRepository {
 }
 
 
-export default CartMemoryRepository;
+export default CartMemoryDAO;

@@ -1,31 +1,25 @@
-import { Product } from "../../../core/product/model";
-import ProductRepository, {
-    CreateProductCMD, 
-    FilterProduct, 
-    UpdateProductCMD 
-} from "../../../core/product/repository";
+import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../core/product/dao';
+
 import MemorySettings from "../../settings/memory";
 
 import uuid from "../../utils/uuid";
 
-class ProductMemoryRepository extends ProductRepository {
+class ProductMemoryRepository implements ProductDAO {
 
-    private items: Product[];
+    private items: ProductDTO[];
     
     constructor(settings: MemorySettings) {
-        super();
-
         this.items = [];
     }
     
-    async find(id: String): Promise<Product> {
+    async find(id: String): Promise<ProductDTO> {
         const result = this.items.find(item => item.id === id);
         if (!result) throw new Error('product not found');
 
         return result;
     }
 
-    async search(filter: FilterProduct): Promise<Product[]> {
+    async search(filter: FilterProductCMD): Promise<ProductDTO[]> {
         return this.items.filter(item => {
             if (filter.ids && !filter.ids.includes(item.id)) return false;
             if (filter.name && item.name !== filter.name) return false;
@@ -39,21 +33,19 @@ class ProductMemoryRepository extends ProductRepository {
         })
     }
 
-    async create(cmd: CreateProductCMD): Promise<Product> {
-        const product: Product = {
+    async create(cmd: CreateProductCMD): Promise<ProductDTO> {
+        const product: ProductDTO = {
             id: uuid(),
             timestamp: new Date(),
             ...cmd
         }
 
         this.items.push(product);
-
-        this.events.create.notify(product);
         
         return product;
     }
 
-    async update(id: string, cmd: UpdateProductCMD): Promise<Product> {
+    async update(id: string, cmd: UpdateProductCMD): Promise<ProductDTO> {
         const productUpdated = {
             ...(await this.find(id)),
             ...cmd
@@ -61,12 +53,10 @@ class ProductMemoryRepository extends ProductRepository {
 
         this.items = this.items.map(item => item.id === id ? productUpdated : item);
 
-        this.events.update.notify(productUpdated);
-
         return productUpdated;
     }
 
-    async delete(id: string): Promise<Product> {
+    async delete(id: string): Promise<ProductDTO> {
         const product = await this.find(id);
 
         this.items = this.items.filter(item => item.id !== id);

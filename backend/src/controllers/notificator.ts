@@ -1,8 +1,8 @@
 import nodemailer, { Transporter } from 'nodemailer';
 import twilio, { Twilio } from 'twilio';
 
-import { Cart } from '../core/cart/model';
-import { UserModel } from '../core/user/model';
+import Cart from '../core/cart/model';
+import User from '../core/user/model';
 
 interface NotifierSettings {
     senders: {
@@ -45,17 +45,17 @@ class NotifierController {
         }
     }
 
-    public async registerUser(user: UserModel) {
+    public async registerUser(user: User) {
         if (!this.settings.reciver.mail) return;
         
         await this.sendMail(
             this.settings.reciver.mail,
             'Nuevo Registro',
-            user
+            user.json()
         );
     }
 
-    public async orderCreated(user: UserModel, cart: Cart) {
+    public async orderCreated(user: User, cart: Cart) {
         if (this.settings.reciver.mail) {
             await this.sendMail(
                 this.settings.reciver.mail,

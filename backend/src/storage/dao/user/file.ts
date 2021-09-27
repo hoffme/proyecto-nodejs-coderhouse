@@ -1,18 +1,15 @@
-import UserRepository, { CreatUserCMD, FilterUserCMD, UpdateUserCMD, User } from '../../../core/user/repository';
+import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../core/user/dao';
 
 import FileSettings from '../../settings/file';
 
 import FileStorage from '../../utils/file';
-
 import uuid from '../../utils/uuid';
 
-class UserFileRepository extends UserRepository {
+class UserFileDAO implements UserDAO {
 
-    private file: FileStorage<User[]>
+    private file: FileStorage<UserDTO[]>
 
     constructor(settings: FileSettings) {
-        super();
-
         this.file = new FileStorage(settings.path);
     }
     
@@ -21,9 +18,7 @@ class UserFileRepository extends UserRepository {
         catch { await this.file.set([]) }
     }
 
-    async find(filter: FilterUserCMD): Promise<User | undefined> {
-        if (!filter.email && !filter.id) return undefined;
-
+    async find(filter: FilterUserCMD): Promise<UserDTO> {
         const items = await this.file.get();
         
         const user = items.find(user => {
@@ -37,13 +32,13 @@ class UserFileRepository extends UserRepository {
         return user;
     }
     
-    async create(cmd: CreatUserCMD): Promise<User> {
+    async create(cmd: CreateUserCMD): Promise<UserDTO> {
         const items = await this.file.get();
 
         const exist = items.find(u => u.email === cmd.email);
         if (exist) throw new Error('user already register');
         
-        const user: User = {
+        const user: UserDTO = {
             id: uuid(),
             ...cmd
         }
@@ -51,15 +46,13 @@ class UserFileRepository extends UserRepository {
 
         await this.file.set(items);
 
-        this.events.create.notify(user)
-
         return user;
     }
 
-    async update(id: string, update: UpdateUserCMD): Promise<User> {
+    async update(id: string, update: UpdateUserCMD): Promise<UserDTO> {
         let items = await this.file.get();
         
-        let userUpdated: User | undefined = undefined;
+        let userUpdated: UserDTO | undefined = undefined;
 
         items = items.map(user => {
             if (user.id !== id) return user;
@@ -89,12 +82,10 @@ class UserFileRepository extends UserRepository {
 
         await this.file.set(items);
 
-        this.events.update.notify(userUpdated)
-
         return userUpdated;
     }
 
-    async delete(id: string): Promise<User> {
+    async delete(id: string): Promise<UserDTO> {
         const items = await this.file.get();
 
         const model = items.find(user => user.id === id);
@@ -102,10 +93,8 @@ class UserFileRepository extends UserRepository {
 
         await this.file.set(items);
 
-        this.events.remove.notify(model)
-
         return model;
     }
 }
 
-export default UserFileRepository;
+export default UserFileDAO;

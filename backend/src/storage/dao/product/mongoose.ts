@@ -1,8 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 
-import { Product } from '../../../core/product/model';
+import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../core/product/dao';
 
-import ProductRepository, { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../../core/product/repository';
 import MongooseSettings from '../../settings/mongoose';
 
 interface ProductMongoose {
@@ -16,7 +15,7 @@ interface ProductMongoose {
     stock: Number
 }
 
-const toModel = (mongo: ProductMongoose): Product => {
+const toModel = (mongo: ProductMongoose): ProductDTO => {
     return {
         id: mongo._id?.toHexString() || '',
         timestamp: mongo.timestamp,
@@ -29,7 +28,7 @@ const toModel = (mongo: ProductMongoose): Product => {
     }
 }
 
-class ProductMongooseRepository extends ProductRepository {
+class ProductMongooseRepository implements ProductDAO {
 
     private readonly settings: MongooseSettings;
     private readonly collectionName: string;
@@ -37,8 +36,6 @@ class ProductMongooseRepository extends ProductRepository {
     private readonly collection: mongoose.Model<ProductMongoose>;
 
     constructor(settings: MongooseSettings) {
-        super();
-
         this.settings = settings;
         this.collectionName = 'products';
 
@@ -67,14 +64,14 @@ class ProductMongooseRepository extends ProductRepository {
         })
     }
 
-    async find(id: string): Promise<Product> {
+    async find(id: string): Promise<ProductDTO> {
         const product = await this.collection.findById(id);
         if (!product) throw new Error("product not found");
 
         return toModel(product);
     }
     
-    async search(filter: FilterProduct): Promise<Product[]> {
+    async search(filter: FilterProductCMD): Promise<ProductDTO[]> {
         let mongooseFilter: any = {};
 
         if (filter.ids) mongooseFilter.id = { $in: filter.ids };
@@ -94,7 +91,7 @@ class ProductMongooseRepository extends ProductRepository {
         return products.map(product => toModel(product));
     }
 
-    async create(cmd: CreateProductCMD): Promise<Product> {
+    async create(cmd: CreateProductCMD): Promise<ProductDTO> {
         const inserted = await this.collection.create({
             timestamp: new Date(),
             ...cmd
@@ -102,12 +99,10 @@ class ProductMongooseRepository extends ProductRepository {
 
         const product = toModel(inserted);
 
-        this.events.create.notify(product);
-
         return product;
     }
 
-    async update(id: string, cmd: UpdateProductCMD): Promise<Product> {
+    async update(id: string, cmd: UpdateProductCMD): Promise<ProductDTO> {
         const data = await this.collection.findById(id);
         if (!data) throw new Error("product not found");
 
@@ -121,20 +116,16 @@ class ProductMongooseRepository extends ProductRepository {
 
         const product = toModel(data);
 
-        this.events.update.notify(product);
-
         return product;
     }
 
-    async delete(id: string): Promise<Product> {
+    async delete(id: string): Promise<ProductDTO> {
         const data = await this.collection.findById(id);
         if (!data) throw new Error("product not found");
 
         await data.deleteOne()
 
         const product = toModel(data);
-
-        this.events.delete.notify(product);
 
         return product;
     }

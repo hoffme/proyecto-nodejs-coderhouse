@@ -1,15 +1,11 @@
 import EventCore from "../core/generics/events";
 
-import { Product } from "../core/product/model";
-import ProductRepository, { 
-    CreateProductCMD, 
-    FilterProduct, 
-    UpdateProductCMD 
-} from "../core/product/repository";
+import ProductRepository from "../core/product/repository";
+import Product, { CreateProductCMD, FilterProductCMD, UpdateProductCMD } from "../core/product/model";
 
 class ProductsController {
 
-    private repository: ProductRepository
+    private readonly repository: ProductRepository;
 
     public readonly events: {
         create: EventCore<Product>
@@ -17,17 +13,17 @@ class ProductsController {
         delete: EventCore<Product>
     }
 
-    constructor(repository: ProductRepository) {
-        this.repository = repository;
+    constructor() {
+        this.repository = new ProductRepository();
 
         this.events = {
-            create: this.repository.events.create,
-            update: this.repository.events.update,
-            delete: this.repository.events.delete,
+            create: Product.events.create,
+            update: Product.events.update,
+            delete: Product.events.delete,
         }
     }
 
-    async search(filter: FilterProduct): Promise<Product[]> {
+    async search(filter: FilterProductCMD): Promise<Product[]> {
         return await this.repository.search(filter);
     }
 

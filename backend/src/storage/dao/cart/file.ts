@@ -1,18 +1,15 @@
-import CartRepository, { CartFilter, CartRepositoryItem, CreateCartCMD, ItemRepository, UpdateCartCMD } from '../../../core/cart/repository';
-import ProductRepository from '../../../core/product/repository';
+import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../core/cart/dao';
 
 import FileSettings from '../../settings/file';
 
 import FileStorage from '../../utils/file';
 import uuid from '../../utils/uuid';
 
-class CartFileRepository extends CartRepository {
+class CartFileDAO implements CartDAO {
     
-    private file: FileStorage<{[id: string]: CartRepositoryItem}>
+    private file: FileStorage<{[id: string]: CartDTO}>
 
-    constructor(products: ProductRepository, setting: FileSettings) {
-        super(products);
-
+    constructor(setting: FileSettings) {
         this.file = new FileStorage(setting.path);
     }
     
@@ -21,7 +18,7 @@ class CartFileRepository extends CartRepository {
         catch (e) { await this.file.set({}) }
     }
 
-    protected async _find(id: string): Promise<CartRepositoryItem> {
+    async find(id: string): Promise<CartDTO> {
         const items = await this.file.get();
 
         const cart = items[id];
@@ -30,7 +27,7 @@ class CartFileRepository extends CartRepository {
         return cart;
     }
 
-    protected async _search(filter: CartFilter): Promise<CartRepositoryItem[]> {
+    async search(filter: FilterCartCMD): Promise<CartDTO[]> {
         const items = await this.file.get();
 
         return Object.values(items).filter(item => {
@@ -40,8 +37,8 @@ class CartFileRepository extends CartRepository {
         })
     }
 
-    protected async _create(cmd: CreateCartCMD): Promise<CartRepositoryItem> {
-        const cart: CartRepositoryItem = {
+    async create(cmd: CreateCartCMD): Promise<CartDTO> {
+        const cart: CartDTO = {
             id: uuid(),
             timestamp: new Date(),
             items_ref: [],
@@ -56,7 +53,7 @@ class CartFileRepository extends CartRepository {
         return cart;
     }
 
-    protected async _update(id: string, update: UpdateCartCMD): Promise<CartRepositoryItem> {
+    async update(id: string, update: UpdateCartCMD): Promise<CartDTO> {
         const items = await this.file.get();
         if (!items[id]) throw new Error('cart not found');
         
@@ -67,7 +64,7 @@ class CartFileRepository extends CartRepository {
         return items[id];
     }
 
-    protected async _clear(id: string): Promise<CartRepositoryItem> {
+    async clear(id: string): Promise<CartDTO> {
         const items = await this.file.get();
         if (!items[id]) throw new Error('cart not found');
 
@@ -79,7 +76,7 @@ class CartFileRepository extends CartRepository {
         return items[id];
     }
 
-    protected async _setItem(id: string, newItem: ItemRepository): Promise<ItemRepository> {
+    async setItem(id: string, newItem: ItemDTO): Promise<ItemDTO> {
         const items = await this.file.get();
         const cart = items[id];
         if (!cart) throw new Error('cart not found');
@@ -99,11 +96,11 @@ class CartFileRepository extends CartRepository {
         return newItem;
     }
 
-    protected async _remItem(id: string, product_id: string): Promise<ItemRepository> {
+    async remItem(id: string, product_id: string): Promise<ItemDTO> {
         const items = await this.file.get();
         if (!items[id]) throw new Error('cart not found');
         
-        let result: ItemRepository | undefined = undefined;
+        let result: ItemDTO | undefined = undefined;
 
         items[id].items_ref = items[id].items_ref.filter(item => {
             if (item.product_id !== product_id) return true;
@@ -120,4 +117,4 @@ class CartFileRepository extends CartRepository {
     }
 }
 
-export default CartFileRepository;
+export default CartFileDAO;

@@ -6,7 +6,7 @@ import session from 'express-session';
 import passport from 'passport';
 import { Strategy as PassportLocal } from 'passport-local';
 
-import { UserModel } from '../../core/user/model';
+import * as UserModel from '../../core/user/model';
 
 import Controllers from '../../controllers/index';
 
@@ -15,7 +15,7 @@ import apiRouter from './api';
 
 declare global {
     namespace Express {
-        interface User extends UserModel {}
+        interface User extends UserModel.default {}
     }
 }
 

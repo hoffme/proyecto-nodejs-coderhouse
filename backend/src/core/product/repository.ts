@@ -1,63 +1,35 @@
-import EventCore from "../generics/events";
+import Product, { CreateProductCMD, FilterProductCMD, UpdateProductCMD } from "./model";
 
-import { Product } from "./model";
-
-interface FilterProduct {
-    ids?: string[]
-    name?: string
-    code?: string
-    price_min?: number
-    price_max?: number
-    stock_min?: number,
-    stock_max?: number
-    stock_zero?: boolean
-}
-
-interface CreateProductCMD {
-    name: string
-    description: string
-    code: string
-    picture: string
-    price: number
-    stock: number
-}
-
-interface UpdateProductCMD {
-    name?: string
-    description?: string
-    picture?: string
-    price?: number
-    stock?: number
-}
-
-abstract class ProductRepository {
+class ProductRepository {
     
-    public readonly events: {
-        create: EventCore<Product>
-        update: EventCore<Product>
-        delete: EventCore<Product>
+    public async find(id: string): Promise<Product> {
+        return Product.getById(id);
     }
 
-    protected constructor() {
-        this.events = {
-            create: new EventCore('create'),
-            update: new EventCore('update'),
-            delete: new EventCore('delete')
-        }
+    public async search(filter: FilterProductCMD): Promise<Product[]> {
+        return Product.search(filter);
     }
 
-    async setup(): Promise<void> {}
+    public async create(fields: CreateProductCMD): Promise<Product> {
+        return Product.create(fields);
+    }
 
-    abstract find(id: String): Promise<Product>
-    abstract search(filter: FilterProduct): Promise<Product[]>
-    abstract create(cmd: CreateProductCMD): Promise<Product>
-    abstract update(id: string, cmd: UpdateProductCMD): Promise<Product>
-    abstract delete(id: string): Promise<Product>
+    public async update(id: string, cmd: UpdateProductCMD): Promise<Product> {
+        const product = await Product.getById(id);
+        await product.update(cmd);
+        return product;
+    }
+
+    public async delete(id: string): Promise<Product> {
+        const product = await Product.getById(id);
+        await product.delete();
+        return product;
+    }
 }
 
 export default ProductRepository;
 export type {
-    FilterProduct,
+    FilterProductCMD,
     CreateProductCMD,
     UpdateProductCMD,
 }

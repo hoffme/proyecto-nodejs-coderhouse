@@ -1,46 +1,8 @@
 import EventCore from "../generics/events";
-import { User } from "./model";
 
-interface FilterUserCMD {
-    id?: string
-    email?: string
-}
+import User, { CreateUserCMD, FilterUserCMD, UpdateUserCMD } from "./model";
 
-interface CreatUserCMD {
-    name: string
-    lastname: string
-    email: string
-    phone: string
-    age: string
-    avatar: string
-    address: {
-        country: string
-        city: string
-        street: string
-        number: string
-        aditional: string
-    }
-    hash: string
-}
-
-interface UpdateUserCMD {
-    name?: string
-    lastname?: string
-    email?: string
-    phone?: string
-    age?: string
-    avatar?: string
-    address?: {
-        country?: string
-        city?: string
-        street?: string
-        number?: string
-        aditional?: string
-    }
-    hash?: string
-}
-
-abstract class UserRepository {
+class UserRepository {
 
     public readonly events: {
         create: EventCore<User>
@@ -48,7 +10,7 @@ abstract class UserRepository {
         remove: EventCore<User>
     }
 
-    protected constructor() {
+    constructor() {
         this.events = {
             create: new EventCore('create'),
             update: new EventCore('update'),
@@ -56,21 +18,32 @@ abstract class UserRepository {
         }
     }
 
-    public abstract setup(): Promise<void>
+    public async find(filter: FilterUserCMD): Promise<User> {
+        return User.search(filter);
+    }
 
-    public abstract find(filter: FilterUserCMD): Promise<User | undefined>
-
-    public abstract create(cmd: CreatUserCMD): Promise<User>
+    public async create(cmd: CreateUserCMD): Promise<User> {
+        return User.create(cmd);
+    }
     
-    public abstract update(id: string, cmd: UpdateUserCMD): Promise<User>
+    public async update(id: string, cmd: UpdateUserCMD): Promise<User> {
+        const user = await User.getById(id);
+        await user.update(cmd);
+        
+        return user;
+    }
 
-    public abstract delete(id: string): Promise<User>
+    public async delete(id: string): Promise<User> {
+        const user = await User.getById(id);
+        await user.delete();
+        
+        return user;
+    }
 }
 
 export default UserRepository;
 export type {
-    User,
     FilterUserCMD,
-    CreatUserCMD,
+    CreateUserCMD,
     UpdateUserCMD
 }

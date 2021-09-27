@@ -3,9 +3,13 @@ import CartController from "./cart";
 import UserController from "./user";
 import NotifierController from "./notificator";
 
-import ProductRepositoryFactory from "../storage/factories/product";
-import CartRepositoryFactory from "../storage/factories/cart";
-import UserRepositoryFactory from "../storage/factories/user";
+import User from "../core/user/model";
+import Product from "../core/product/model";
+import Cart from "../core/cart/model";
+
+import ProductDAOFactory from "../storage/factories/product";
+import CartDAOFactory from "../storage/factories/cart";
+import UserDAOFactory from "../storage/factories/user";
 
 import ControllerSettings from "./settings";
 
@@ -17,14 +21,15 @@ class Controllers {
     static notifier: NotifierController;
 
     static async setup(settings: ControllerSettings) {
-        await UserRepositoryFactory.build(settings.user);
-        await ProductRepositoryFactory.build(settings.product);
-        await CartRepositoryFactory.build(ProductRepositoryFactory.repository, settings.cart);
+        User.setDAO(await UserDAOFactory.build(settings.user));
+        Product.setDAO(await ProductDAOFactory.build(settings.product));
+        Cart.setDAO(await CartDAOFactory.build(settings.cart));
 
-        Controllers.user = new UserController(UserRepositoryFactory.repository)
-        Controllers.products = new ProductsController(ProductRepositoryFactory.repository);
-        Controllers.cart = new CartController(CartRepositoryFactory.repository);
         Controllers.notifier = new NotifierController(settings.notificator);
+
+        Controllers.user = new UserController()
+        Controllers.products = new ProductsController();
+        Controllers.cart = new CartController();
     }
 }
 

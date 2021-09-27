@@ -1,19 +1,17 @@
 import knex, { Knex } from 'knex';
 
 import uuid from '../../utils/uuid';
+
 import KnexSettings from '../../settings/knex';
 
-import { Product } from '../../../core/product/model';
-import ProductRepository, { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../../core/product/repository';
+import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../core/product/dao';
 
-class ProductsKnexRepository extends ProductRepository {
+class ProductsKnexRepository implements ProductDAO {
 
     private readonly tableName: string;
     private readonly settings: KnexSettings;
 
     constructor(settings: KnexSettings) {
-        super();
-
         this.tableName = 'products';
         this.settings = settings;
     }
@@ -49,8 +47,8 @@ class ProductsKnexRepository extends ProductRepository {
         });
     }
 
-    async create(cmd: CreateProductCMD): Promise<Product> {
-        const product: Product = {
+    async create(cmd: CreateProductCMD): Promise<ProductDTO> {
+        const product: ProductDTO = {
             id: uuid(),
             timestamp: new Date(),
             ...cmd
@@ -60,13 +58,11 @@ class ProductsKnexRepository extends ProductRepository {
             await conn.table(this.tableName).insert(product);
         })
 
-        this.events.create.notify(product);
-
         return product;
     }
 
-    async find(id: string): Promise<Product> {
-        const rows = await this.execute<Product[]>(async conn => {
+    async find(id: string): Promise<ProductDTO> {
+        const rows = await this.execute<ProductDTO[]>(async conn => {
             return await conn.table(this.tableName).select("*").where("id", id).limit(1);
         })
 
@@ -75,8 +71,8 @@ class ProductsKnexRepository extends ProductRepository {
         return rows[0];
     }
 
-    async search(filter: FilterProduct): Promise<Product[]> {
-        return await this.execute<Product[]>(async conn => {
+    async search(filter: FilterProductCMD): Promise<ProductDTO[]> {
+        return await this.execute<ProductDTO[]>(async conn => {
             let query = conn.table(this.tableName).select("*");
             
             if (filter.ids) query = query.where("id IN", filter.ids)
@@ -92,8 +88,8 @@ class ProductsKnexRepository extends ProductRepository {
         })
     }
 
-    async update(id: string, cmd: UpdateProductCMD): Promise<Product> {
-        const result = await this.execute<Product>(async conn => {
+    async update(id: string, cmd: UpdateProductCMD): Promise<ProductDTO> {
+        const result = await this.execute<ProductDTO>(async conn => {
             const results = await conn.table(this.tableName).select("*").where("id", id).limit(1);
             const product = results[0];
             if (!product) return undefined;
@@ -108,13 +104,11 @@ class ProductsKnexRepository extends ProductRepository {
             throw new Error('product not found');
         }
 
-        this.events.update.notify(result);
-
         return result;
     }
 
-    async delete(id: string): Promise<Product> {
-        const result = await this.execute<Product>(async conn => {
+    async delete(id: string): Promise<ProductDTO> {
+        const result = await this.execute<ProductDTO>(async conn => {
             const results = await conn.table(this.tableName).select("*").where("id", id).limit(1);
             const product = results[0];
             if (!product) return undefined;
@@ -126,8 +120,6 @@ class ProductsKnexRepository extends ProductRepository {
         if (!result) {
             throw new Error('product not found');
         }
-
-        this.events.delete.notify(result);
 
         return result;
     }

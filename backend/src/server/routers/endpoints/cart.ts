@@ -4,7 +4,7 @@ import auth from '../middlewares/auth';
 import asyncHandler from '../utils/wrap';
 
 import Controllers from '../../../controllers/index';
-import { ItemRepository } from '../../../core/cart/repository';
+import { ItemDTO } from '../../../core/cart/dao';
 
 const router = Router();
 
@@ -36,9 +36,9 @@ router.post('/products', auth('client'), asyncHandler(async req => {
     
     const cart = carts[0];
 
-    const itemRepository: ItemRepository = req.body;
+    const itemDTA: ItemDTO = req.body;
 
-    return await Controllers.cart.setItem(cart.id, itemRepository);
+    return await Controllers.cart.setItem(cart.id, itemDTA.product_id, itemDTA.count);
 }));
 
 router.delete('/products/:product_id', auth('client'), asyncHandler(async req => {

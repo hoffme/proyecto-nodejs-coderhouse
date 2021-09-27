@@ -1,38 +1,19 @@
-import EventCore from '../core/generics/events';
-
-import { Cart, Item } from '../core/cart/model';
-import CartRepository, {
-    CartFilter,
-    CreateCartCMD,
-    ItemRepository,
-    UpdateCartCMD
-} from '../core/cart/repository';
+import CartRepository from '../core/cart/repository';
+import Cart, { CreateCartCMD, FilterCartCMD, UpdateCartCMD } from '../core/cart/model';
 
 class CartController {
 
     private repository: CartRepository
 
-    public readonly events: {
-        create: EventCore<Cart>
-        update: EventCore<Cart>
-        setItem: EventCore<{ cart_id: string, item: Item }>
-    }
-
-    constructor(repository: CartRepository) {
-        this.repository = repository;
-
-        this.events = {
-            create: this.repository.events.create,
-            update: this.repository.events.update,
-            setItem: this.repository.events.setItem,
-        }
+    constructor() {
+        this.repository = new CartRepository();
     }
 
     async find(id: string): Promise<Cart> {
         return await this.repository.find(id);
     }
 
-    async search(filter: CartFilter): Promise<Cart[]> {
+    async search(filter: FilterCartCMD): Promise<Cart[]> {
         return await this.repository.search(filter);
     }
 
@@ -56,12 +37,16 @@ class CartController {
         return await this.repository.clear(id);
     }
 
-    async setItem(cart_id: string, item: ItemRepository): Promise<Item> {
-        return await this.repository.setItem(cart_id, item);
+    async setItem(cart_id: string, product_id: string, quantity: number): Promise<void> {
+        const cart = await this.repository.find(cart_id);
+
+        await cart.setItem(product_id, quantity);
     }
 
-    async remItem(cart_id: string, product_id: string): Promise<Item> {
-        return await this.repository.remItem(cart_id, product_id);
+    async remItem(cart_id: string, product_id: string): Promise<void> {
+        const cart = await this.repository.find(cart_id);
+
+        await cart.remItem(product_id);
     }
 }
 

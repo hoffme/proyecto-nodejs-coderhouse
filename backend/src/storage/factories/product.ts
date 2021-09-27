@@ -1,12 +1,12 @@
 import BuilderSettings from "./settings";
 
-import ProductRepository from "../../core/product/repository";
+import { ProductDAO } from "../../core/product/dao";
 
-import ProductFileRepository from "../repositories/product/file";
-import ProductFirestoreRepository from "../repositories/product/firestore";
-import ProductsKnexRepository from "../repositories/product/knex";
-import ProductMemoryRepository from "../repositories/product/memory";
-import ProductMongooseRepository from "../repositories/product/mongoose";
+import ProductFileDAO from "../dao/product/file";
+import ProductFirestoreRepository from "../dao/product/firestore";
+import ProductsKnexRepository from "../dao/product/knex";
+import ProductMemoryRepository from "../dao/product/memory";
+import ProductMongooseRepository from "../dao/product/mongoose";
 
 import MemorySettings from "../settings/memory";
 import FileSettings from "../settings/file";
@@ -14,33 +14,44 @@ import MongooseSettings from "../settings/mongoose";
 import KnexSettings from "../settings/knex";
 import FirestoreSettings from "../settings/firestore";
 
-class ProductRepositoryFactory {
+class ProductDAOFactory {
 
-    static repository: ProductRepository;
+    static dao: ProductDAO;
 
-    private static readonly repositories: {[key:string]: (settings: any) => ProductRepository} = {
-        memory: (settings: MemorySettings) => new ProductMemoryRepository(settings),
-        file: (settings: FileSettings) => new ProductFileRepository(settings),
-        mongoose: (settings: MongooseSettings) => new ProductMongooseRepository(settings),
-        knex: (settings: KnexSettings) => new ProductsKnexRepository(settings),
-        firestore: (settings: FirestoreSettings) => new ProductFirestoreRepository(settings)
+    private static readonly types: {[key:string]: (settings: any) => Promise<ProductDAO>} = {
+        memory: async (settings: MemorySettings) => new ProductMemoryRepository(settings),
+        file: async (settings: FileSettings) => {
+            const dao = new ProductFileDAO(settings);
+            await dao.setup();
+
+            return dao;
+        },
+        mongoose: async (settings: MongooseSettings) => {
+            const dao = new ProductMongooseRepository(settings);
+            await dao.setup();
+
+            return dao;
+        },
+        knex: async (settings: KnexSettings) => {
+            const dao = new ProductsKnexRepository(settings);
+            await dao.setup();
+
+            return dao;
+        },
+        firestore: async (settings: FirestoreSettings) => new ProductFirestoreRepository(settings)
     }
 
-    static async build(settings: BuilderSettings): Promise<ProductRepository> {
+    static async build(settings: BuilderSettings): Promise<ProductDAO> {
         const type: keyof BuilderSettings = (Object.keys(settings) as Array<keyof typeof settings>)[0];
     
-        const builder = this.repositories[type];
+        const builder = this.types[type];
         if (!builder) throw new Error('invalid settings');
 
-        const repository = builder(settings[type]);
+        this.dao = await builder(settings[type]);
 
-        await repository.setup();
-
-        this.repository = repository;
-
-        return repository;
+        return this.dao;
     }
 
 }
 
-export default ProductRepositoryFactory;
+export default ProductDAOFactory;

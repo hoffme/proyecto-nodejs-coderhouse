@@ -1,33 +1,29 @@
-import firebase from 'firebase';
+import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../core/cart/dao';
 
-import CartRepository, { CartFilter, CartRepositoryItem, CreateCartCMD, ItemRepository, UpdateCartCMD } from '../../../core/cart/repository';
-import ProductRepository from '../../../core/product/repository';
 import FirestoreSettings from '../../settings/firestore';
 
 import uuid from '../../utils/uuid';
 
-class CartFirestoreRepository extends CartRepository {
+class CartFirestoreDAO implements CartDAO {
     
     private readonly settings: FirestoreSettings;
     private readonly collectionName: string;
 
-    constructor(products: ProductRepository, settings: FirestoreSettings) {
-        super(products);
-        
+    constructor(settings: FirestoreSettings) {        
         this.settings = settings;
         this.collectionName = 'carts';
     }
 
-    private get collection(): firebase.firestore.CollectionReference {
+    private get collection() {
         return this.settings.firestore.collection(this.collectionName);
     }
 
-    protected async _find(id: string): Promise<CartRepositoryItem> {
+    async find(id: string): Promise<CartDTO> {
         const cartRef = await this.collection.doc(id).get();
         if (!cartRef || !cartRef.exists) throw new Error('cart not found');
 
         const cartData = cartRef.data() || {};
-        const cart: CartRepositoryItem = {
+        const cart: CartDTO = {
             id: cartRef.id,
             timestamp: cartData.timestamp,
             user_id: cartData.user_id,
@@ -37,7 +33,7 @@ class CartFirestoreRepository extends CartRepository {
         return cart;
     }
 
-    protected async _search(filter: CartFilter): Promise<CartRepositoryItem[]> {
+    async search(filter: FilterCartCMD): Promise<CartDTO[]> {
         let query = this.collection.where("id", "!=", null);
 
         if (filter.user_id) query = query.where("user_id", "==", filter.user_id)
@@ -56,8 +52,8 @@ class CartFirestoreRepository extends CartRepository {
         })
     }
 
-    protected async _create(cmd: CreateCartCMD): Promise<CartRepositoryItem> {
-        const cart: CartRepositoryItem = {
+    async create(cmd: CreateCartCMD): Promise<CartDTO> {
+        const cart: CartDTO = {
             id: uuid(),
             timestamp: new Date(),
             items_ref: [],
@@ -69,9 +65,9 @@ class CartFirestoreRepository extends CartRepository {
         return cart;
     }
 
-    protected async _update(id: string, cmd: UpdateCartCMD): Promise<CartRepositoryItem> {
-        const update: CartRepositoryItem = {
-            ...(await this._find(id)),
+    async update(id: string, cmd: UpdateCartCMD): Promise<CartDTO> {
+        const update: CartDTO = {
+            ...(await this.find(id)),
             ...cmd
         }
 
@@ -80,9 +76,9 @@ class CartFirestoreRepository extends CartRepository {
         return update;
     }
 
-    protected async _clear(id: string): Promise<CartRepositoryItem> {
-        const update: CartRepositoryItem = {
-            ...(await this._find(id)),
+    async clear(id: string): Promise<CartDTO> {
+        const update: CartDTO = {
+            ...(await this.find(id)),
             items_ref: []
         }
 
@@ -91,8 +87,8 @@ class CartFirestoreRepository extends CartRepository {
         return update;
     }
 
-    protected async _setItem(id: string, item: ItemRepository): Promise<ItemRepository> {
-        const cart = await this._find(id);
+    async setItem(id: string, item: ItemDTO): Promise<ItemDTO> {
+        const cart = await this.find(id);
 
         let added = false;
         cart.items_ref = cart.items_ref.map(item => {
@@ -109,10 +105,10 @@ class CartFirestoreRepository extends CartRepository {
         return item;
     }
 
-    protected async _remItem(id: string, product_id: string): Promise<ItemRepository> {
-        const cart = await this._find(id);
+    async remItem(id: string, product_id: string): Promise<ItemDTO> {
+        const cart = await this.find(id);
 
-        let result: ItemRepository | undefined = undefined;
+        let result: ItemDTO | undefined = undefined;
         cart.items_ref = cart.items_ref.filter(item => {
             if (item.product_id !== product_id) return true;
             
@@ -128,4 +124,4 @@ class CartFirestoreRepository extends CartRepository {
     }
 }
 
-export default CartFirestoreRepository;
+export default CartFirestoreDAO;

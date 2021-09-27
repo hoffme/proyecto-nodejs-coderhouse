@@ -1,40 +1,44 @@
 import BuilderSettings from "./settings";
 
-import UserRepository from "../../core/user/repository";
+import { UserDAO } from "../../core/user/dao";
 
-import CartFileRepository from "../repositories/user/file";
-import CartMemoryRepository from "../repositories/user/memory";
-import CartMongooseRepository from "../repositories/user/mongoose";
+import CartFileRepository from "../dao/user/file";
+import CartMemoryRepository from "../dao/user/memory";
+import CartMongooseRepository from "../dao/user/mongoose";
 
 import FileSettings from "../settings/file";
 import MemorySettings from "../settings/memory";
 import MongooseSettings from "../settings/mongoose";
 
-class UserRepositoryFactory {
+class UserDAOFactory {
 
-    public static repository: UserRepository;
+    public static dao: UserDAO;
 
-    private static readonly repositories: {[key:string]: (settings: any) => UserRepository} = {
-        memory: (settings: MemorySettings) => new CartMemoryRepository(settings),
-        file: (settings: FileSettings) => new CartFileRepository(settings),
-        mongoose: (settings: MongooseSettings) => new CartMongooseRepository(settings)
+    private static readonly repositories: {[key:string]: (settings: any) => Promise<UserDAO>} = {
+        memory: async (settings: MemorySettings) => {
+            const dao = new CartMemoryRepository(settings);
+            await dao.setup();
+            return dao;
+        },
+        file: async (settings: FileSettings) => new CartFileRepository(settings),
+        mongoose: async (settings: MongooseSettings) => {
+            const dao = new CartMongooseRepository(settings);
+            await dao.setup();
+            return dao;
+        }
     }
 
-    static async build(settings: BuilderSettings): Promise<UserRepository> {
+    static async build(settings: BuilderSettings): Promise<UserDAO> {
         const type: keyof BuilderSettings = (Object.keys(settings) as Array<keyof typeof settings>)[0];
     
         const builder = this.repositories[type];
         if (!builder) throw new Error('invalid settings');
 
-        const repository = builder(settings[type]);
+        this.dao = await builder(settings[type]);
 
-        await repository.setup();
-
-        this.repository = repository;
-
-        return repository;
+        return this.dao;
     }
 
 }
 
-export default UserRepositoryFactory;
+export default UserDAOFactory;

@@ -3,17 +3,14 @@ import knex, { Knex } from 'knex';
 import uuid from '../../utils/uuid';
 import KnexSettings from '../../settings/knex';
 
-import ProductRepository from '../../../core/product/repository';
-import CartRepository, { CartFilter, CartRepositoryItem, CreateCartCMD, ItemRepository, UpdateCartCMD } from '../../../core/cart/repository';
+import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../core/cart/dao';
 
-class CartsKnexRepository extends CartRepository {
+class CartsKnexDAO implements CartDAO {
     
     private readonly tables: { cart: string, item: string }
     private readonly settings: KnexSettings;
 
-    constructor(products: ProductRepository, settings: KnexSettings) {
-        super(products);
-
+    constructor(settings: KnexSettings) {
         this.tables = { cart: 'carts', item: 'items_carts' }
         this.settings = settings;
     }
@@ -59,8 +56,8 @@ class CartsKnexRepository extends CartRepository {
         });
     }
 
-    protected async _find(id: String): Promise<CartRepositoryItem> {
-        const cart = await this.execute<CartRepositoryItem | undefined>(async (conn) => {
+    async find(id: String): Promise<CartDTO> {
+        const cart = await this.execute<CartDTO | undefined>(async (conn) => {
             const carts = await conn(this.tables.cart).select('*').where('id', id)
             const items = await conn(this.tables.item).select('*').where('cart_id', id);
 
@@ -68,7 +65,7 @@ class CartsKnexRepository extends CartRepository {
 
             const cart = carts[0];
 
-            const cartItem: CartRepositoryItem = {
+            const cartItem: CartDTO = {
                 id: cart.id,
                 user_id: cart.user_id,
                 timestamp: cart.timestamp,
@@ -88,8 +85,8 @@ class CartsKnexRepository extends CartRepository {
         return cart;
     }
 
-    protected async _search(filter: CartFilter): Promise<CartRepositoryItem[]> {
-        const carts = await this.execute<CartRepositoryItem[]>(async (conn) => {
+    async search(filter: FilterCartCMD): Promise<CartDTO[]> {
+        const carts = await this.execute<CartDTO[]>(async (conn) => {
             let query = conn(this.tables.cart).select('*')
             if (filter.user_id) query = query.where('user_id', filter.user_id);
             const carts = await query;
@@ -120,8 +117,8 @@ class CartsKnexRepository extends CartRepository {
         return carts;
     }
 
-    protected async _create(cmd: CreateCartCMD): Promise<CartRepositoryItem> {
-        const cart: CartRepositoryItem = {
+    async create(cmd: CreateCartCMD): Promise<CartDTO> {
+        const cart: CartDTO = {
             id: uuid(),
             timestamp: new Date(),
             items_ref: [],
@@ -139,14 +136,14 @@ class CartsKnexRepository extends CartRepository {
         return cart;
     }
 
-    protected async _update(id: string, cmd: UpdateCartCMD): Promise<CartRepositoryItem> {
-        const cart = await this._find(id);
+    async update(id: string, cmd: UpdateCartCMD): Promise<CartDTO> {
+        const cart = await this.find(id);
 
         await this.execute<void>(async conn => {
             await conn.table(this.tables.cart).update(cmd).where('id', id);
         })
 
-        const result: CartRepositoryItem = {
+        const result: CartDTO = {
             ...cart,
             ...cmd
         }
@@ -154,15 +151,15 @@ class CartsKnexRepository extends CartRepository {
         return result;
     }
 
-    protected async _clear(id: string): Promise<CartRepositoryItem> {
-        const cart = await this.execute<CartRepositoryItem | undefined>(async (conn): Promise<CartRepositoryItem | undefined> => {
+    async clear(id: string): Promise<CartDTO> {
+        const cart = await this.execute<CartDTO | undefined>(async (conn): Promise<CartDTO | undefined> => {
             await conn.table(this.tables.item).where('cart_id', id).delete();
 
             const rows = await conn.table(this.tables.cart).where('id', id).limit(1);
 
             const cart = rows[0];
 
-            const cartItem: CartRepositoryItem = {
+            const cartItem: CartDTO = {
                 id: cart.id,
                 user_id: cart.user_id,
                 timestamp: cart.timestamp,
@@ -176,7 +173,7 @@ class CartsKnexRepository extends CartRepository {
         return cart
     }
 
-    protected async _setItem(id: string, item: ItemRepository): Promise<ItemRepository> {
+    async setItem(id: string, item: ItemDTO): Promise<ItemDTO> {
         await this.execute(async conn => {
             const itemRaw = {
                 cart_id: id,
@@ -202,8 +199,8 @@ class CartsKnexRepository extends CartRepository {
         return item;
     }
 
-    protected async _remItem(id: string, product_id: string): Promise<ItemRepository> {
-        const result = await this.execute<ItemRepository | undefined>(async conn => {
+    async remItem(id: string, product_id: string): Promise<ItemDTO> {
+        const result = await this.execute<ItemDTO | undefined>(async conn => {
             const results = await conn.table(this.tables.item)
                 .select("*")
                 .where("cart_id", id)
@@ -226,4 +223,4 @@ class CartsKnexRepository extends CartRepository {
     }
 }
 
-export default CartsKnexRepository;
+export default CartsKnexDAO;

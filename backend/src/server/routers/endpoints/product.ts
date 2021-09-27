@@ -4,7 +4,7 @@ import auth from '../middlewares/auth';
 import asyncHandler from '../utils/wrap';
 
 import Controllers from '../../../controllers';
-import { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../../core/product/repository';
+import { CreateProductCMD, FilterProductCMD, UpdateProductCMD } from '../../../core/product/model';
 
 const router = Router();
 
@@ -14,7 +14,7 @@ router.get('/:id', asyncHandler(async req => {
 }));
 
 router.post('/search', asyncHandler(async req => {
-    const filter: FilterProduct = req.body;
+    const filter: FilterProductCMD = req.body;
 
     return Controllers.products.search(filter);
 }));

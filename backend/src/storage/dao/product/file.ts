@@ -1,18 +1,15 @@
-import { Product } from '../../../core/product/model';
-import ProductRepository, { CreateProductCMD, FilterProduct, UpdateProductCMD } from '../../../core/product/repository';
+import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../core/product/dao';
+
 import FileSettings from '../../settings/file';
 
 import FileStorage from '../../utils/file';
-
 import uuid from '../../utils/uuid';
 
-class ProductFileRepository extends ProductRepository {
+class ProductFileDAO implements ProductDAO {
 
-    private file: FileStorage<{[id: string]: Product}>
+    private file: FileStorage<{[id: string]: ProductDTO}>
 
     constructor(settings: FileSettings) {
-        super();
-
         this.file = new FileStorage(settings.path);
     }
     
@@ -21,7 +18,7 @@ class ProductFileRepository extends ProductRepository {
         catch { await this.file.set({}) }
     }
 
-    async find(id: string): Promise<Product> {
+    async find(id: string): Promise<ProductDTO> {
         const items = await this.file.get();
         
         const product = items[id];
@@ -30,7 +27,7 @@ class ProductFileRepository extends ProductRepository {
         return product;
     }
     
-    async search(filter: FilterProduct): Promise<Product[]> {
+    async search(filter: FilterProductCMD): Promise<ProductDTO[]> {
         const items = await this.file.get();
 
         return Object.values(items).filter(item => {
@@ -47,8 +44,8 @@ class ProductFileRepository extends ProductRepository {
         })
     }
 
-    async create(cmd: CreateProductCMD): Promise<Product> {
-        const product: Product = {
+    async create(cmd: CreateProductCMD): Promise<ProductDTO> {
+        const product: ProductDTO = {
             id: uuid(),
             timestamp: new Date(),
             ...cmd
@@ -59,23 +56,19 @@ class ProductFileRepository extends ProductRepository {
 
         await this.file.set(items);
 
-        this.events.create.notify(product)
-
         return product;
     }
 
-    async update(id: string, update: UpdateProductCMD): Promise<Product> {
+    async update(id: string, update: UpdateProductCMD): Promise<ProductDTO> {
         const items = await this.file.get();
         items[id] = { ...(items[id]), ...update };
 
         await this.file.set(items);
 
-        this.events.update.notify(items[id])
-
         return items[id];
     }
 
-    async delete(id: string): Promise<Product> {
+    async delete(id: string): Promise<ProductDTO> {
         const items = await this.file.get();
 
         const model = items[id];
@@ -84,10 +77,8 @@ class ProductFileRepository extends ProductRepository {
 
         await this.file.set(items);
 
-        this.events.delete.notify(model)
-
         return model;
     }
 }
 
-export default ProductFileRepository;
+export default ProductFileDAO;

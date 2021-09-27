@@ -5,7 +5,7 @@ import auth from '../middlewares/auth';
 import asyncHandler from '../utils/wrap';
 
 import Controllers from '../../../controllers';
-import { UpdateUser } from '../../../core/user/model';
+import { UpdateUserCMD } from '../../../core/user/model';
 
 const router = Router();
 
@@ -38,7 +38,7 @@ router.put('/avatar', auth('client'), upload.single('avatar'), asyncHandler(asyn
 
 router.put('/', auth('client'), asyncHandler(async req => {
     const user_id = req.user?.id || '';
-    const fields: UpdateUser = req.body;
+    const fields: UpdateUserCMD = req.body;
 
     const update = await Controllers.user.update(user_id, fields);
 

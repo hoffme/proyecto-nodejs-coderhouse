@@ -1,24 +1,20 @@
-import UserRepository, { CreatUserCMD, FilterUserCMD, UpdateUserCMD, User } from '../../../core/user/repository';
+import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../core/user/dao';
 
 import MemorySettings from '../../settings/memory';
 
 import uuid from '../../utils/uuid';
 
-class UserMemoryRepository extends UserRepository {
+class UserMemoryDAO implements UserDAO {
 
-    private items: User[];
+    private items: UserDTO[];
     
     constructor(settings: MemorySettings) {
-        super();
-
         this.items = [];
     }
 
     async setup(): Promise<void> {}
     
-    async find(filter: FilterUserCMD): Promise<User | undefined> {
-        if (!filter.email && !filter.id) return undefined;
-        
+    async find(filter: FilterUserCMD): Promise<UserDTO> {
         const user = this.items.find(user => {
             if (filter.id && filter.id !== user.id) return false;
             if (filter.email && filter.email !== user.email) return false;
@@ -30,24 +26,22 @@ class UserMemoryRepository extends UserRepository {
         return user;
     }
 
-    async create(cmd: CreatUserCMD): Promise<User> {
+    async create(cmd: CreateUserCMD): Promise<UserDTO> {
         const exist = this.items.find(u => u.email === cmd.email);
         if (exist) throw new Error('user already register');
 
-        const user: User = {
+        const user: UserDTO = {
             id: uuid(),
             ...cmd
         }
 
         this.items.push(user);
 
-        this.events.create.notify(user)
-
         return user;
     }
 
-    async update(id: string, update: UpdateUserCMD): Promise<User> {
-        let userUpdated: User | undefined = undefined;
+    async update(id: string, update: UpdateUserCMD): Promise<UserDTO> {
+        let userUpdated: UserDTO | undefined = undefined;
 
         this.items = this.items.map(user => {
             if (user.id !== id) return user;
@@ -75,13 +69,11 @@ class UserMemoryRepository extends UserRepository {
 
         if (!userUpdated) throw 'user not found';
 
-        this.events.update.notify(userUpdated)
-
         return userUpdated;
     }
 
-    async delete(id: string): Promise<User> {
-        let userDelete: User | undefined;
+    async delete(id: string): Promise<UserDTO> {
+        let userDelete: UserDTO | undefined;
         
         this.items = this.items.filter(user => {
             if (user.id !== id) return true;
@@ -92,11 +84,9 @@ class UserMemoryRepository extends UserRepository {
         });
         if (!userDelete) throw 'user not found';
 
-        this.events.remove.notify(userDelete);
-
         return userDelete;
     }
 
 }
 
-export default UserMemoryRepository;
+export default UserMemoryDAO;

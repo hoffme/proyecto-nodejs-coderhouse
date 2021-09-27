@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-import UserRepository, { FilterUserCMD, User, CreatUserCMD, UpdateUserCMD } from '../../../core/user/repository';
+import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../core/user/dao';
 
 import MongooseSettings from '../../settings/mongoose';
 
@@ -22,7 +22,7 @@ interface UserMongoose {
     hash: string
 }
 
-const toModel = (mongo: UserMongoose): User => {
+const toModel = (mongo: UserMongoose): UserDTO => {
     return {
         id: mongo._id?.toHexString() || '',
         name: mongo.name,
@@ -36,7 +36,7 @@ const toModel = (mongo: UserMongoose): User => {
     }
 }
 
-class ProductMongooseRepository extends UserRepository {
+class ProductMongooseDAO implements UserDAO {
 
     private readonly settings: MongooseSettings;
     private readonly collectionName: string;
@@ -44,8 +44,6 @@ class ProductMongooseRepository extends UserRepository {
     private readonly collection: mongoose.Model<UserMongoose>;
 
     constructor(settings: MongooseSettings) {
-        super();
-
         this.settings = settings;
         this.collectionName = 'users';
 
@@ -81,9 +79,7 @@ class ProductMongooseRepository extends UserRepository {
         })
     }
 
-    async find(filter: FilterUserCMD): Promise<User | undefined> {
-        if (!filter.email && !filter.id) return undefined;
-
+    async find(filter: FilterUserCMD): Promise<UserDTO> {
         const mongoFilter: any = {}
         if (filter.id) mongoFilter._id = filter.id;
         if (filter.email) mongoFilter.email = filter.email;
@@ -94,7 +90,7 @@ class ProductMongooseRepository extends UserRepository {
         return toModel(user);
     }
     
-    async create(cmd: CreatUserCMD): Promise<User> {
+    async create(cmd: CreateUserCMD): Promise<UserDTO> {
         const exist = await this.find({ email: cmd.email });
         if (exist) throw new Error('user already register');
 
@@ -104,12 +100,10 @@ class ProductMongooseRepository extends UserRepository {
 
         const user = toModel(inserted);
 
-        this.events.create.notify(user);
-
         return user;
     }
 
-    async update(id: string, cmd: UpdateUserCMD): Promise<User> {
+    async update(id: string, cmd: UpdateUserCMD): Promise<UserDTO> {
         const data = await this.collection.findById(id);
         if (!data) throw new Error("user not found");
 
@@ -131,12 +125,10 @@ class ProductMongooseRepository extends UserRepository {
 
         const user = toModel(data);
 
-        this.events.update.notify(user);
-
         return user;
     }
 
-    async delete(id: string): Promise<User> {
+    async delete(id: string): Promise<UserDTO> {
         const data = await this.collection.findById(id);
         if (!data) throw new Error("user not found");
 
@@ -144,10 +136,8 @@ class ProductMongooseRepository extends UserRepository {
 
         const user = toModel(data);
 
-        this.events.remove.notify(user);
-
         return user;
     }
 }
 
-export default ProductMongooseRepository;
+export default ProductMongooseDAO;
