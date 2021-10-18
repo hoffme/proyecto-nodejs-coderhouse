@@ -1,8 +1,8 @@
-import RouterSettings from "./routers/settings";
+import Settings from "./routers/settings";
 
 interface ServerSettings {
     port: string
-    router: RouterSettings
+    router: Settings
 }
 
 export default ServerSettings;

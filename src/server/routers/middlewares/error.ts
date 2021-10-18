@@ -1,9 +1,9 @@
 import { ErrorRequestHandler } from "express";
-import errorResponse from "../responses/error";
+
+import errorResponse from "../utils/error";
 
 const error: ErrorRequestHandler = (error, req, res, next) => {
     if (error) return errorResponse(res, error.message);
-
     next();
 }
 

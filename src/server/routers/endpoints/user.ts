@@ -5,6 +5,7 @@ import auth from '../middlewares/auth';
 import asyncHandler from '../utils/wrap';
 
 import Controllers from '../../../controllers';
+
 import { UpdateUserCMD } from '../../../models/user/model';
 
 const router = Router();
@@ -14,18 +15,19 @@ const storage = multer.diskStorage({
         cb(null, './public/images');
     },
     filename: (req, file, cb) => {
-        cb(null, ((req.user?.id + '-') || '') + 'avatar-' + Date.now());
+        cb(null, req.ctx.user.id + '-avatar-' + Date.now());
     }
 })
 
 const upload = multer({ storage });
 
 router.get('/', auth('client'), asyncHandler(async req => {
-    return req.user;
+    const user = req.ctx.user;
+    return user.json();
 }))
 
 router.put('/avatar', auth('client'), upload.single('avatar'), asyncHandler(async req => {
-    const user_id = req.user?.id || '';
+    const user_id = req.ctx.user.id;
 
     if (!req.file) throw new Error('cannot upload avatar');
 
@@ -37,7 +39,7 @@ router.put('/avatar', auth('client'), upload.single('avatar'), asyncHandler(asyn
 }));
 
 router.put('/', auth('client'), asyncHandler(async req => {
-    const user_id = req.user?.id || '';
+    const user_id = req.ctx.user.id;
     const fields: UpdateUserCMD = req.body;
 
     const update = await Controllers.user.update(user_id, fields);

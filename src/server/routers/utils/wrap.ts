@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import successResponse from "../responses/success";
+import successResponse from "./success";
 
 const asyncHandler = (handler: (req: Request) => Promise<any>) => {
     return (req: Request, res: Response, next: NextFunction) => {

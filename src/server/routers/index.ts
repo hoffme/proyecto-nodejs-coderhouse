@@ -4,18 +4,29 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import cors from 'cors';
 
-import * as UserModel from '../../models/user/model';
+import Context from './context';
+import CTXMiddleware from './context/middleware';
 
-import RouterSettings from './settings';
+import ErrorsMiddleware from './middlewares/error';
+import LoggerMiddleware from './middlewares/logger';
 
-import router from './api';
+import AuthRouter from './endpoints/auth';
+import UserRouter from './endpoints/user';
+import ProductRouter from './endpoints/product';
+import CartRouter from './endpoints/cart';
+
+import Settings from './settings';
+import successResponse from './utils/success';
 
 declare global {
     namespace Express {
-        interface User extends UserModel.default {}
+        interface Request {
+            ctx: Context
+        }
     }
 }
-const createRouter = async (settings: RouterSettings) => {
+
+const createRouter = async (settings: Settings) => {
     const app = express();
 
     app.use(cors());
@@ -31,7 +42,17 @@ const createRouter = async (settings: RouterSettings) => {
         saveUninitialized: false,
     }));
 
-    app.use('/api', router);
+    app.use(CTXMiddleware);
+    app.use(LoggerMiddleware);
+
+    app.get('/ping', (req, res, next) => successResponse(res, 'pong'));
+
+    app.use('/auth', AuthRouter);
+    app.use('/user', UserRouter);
+    app.use('/product', ProductRouter);
+    app.use('/cart', CartRouter);
+
+    app.use(ErrorsMiddleware);
 
     return app;
 }

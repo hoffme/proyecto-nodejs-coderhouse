@@ -1,10 +1,11 @@
 import { RequestHandler } from 'express';
+import errorResponse from '../utils/error';
 
 const auth = (type: string): RequestHandler => {
     return (req, res, next) => {
-        if (req.isAuthenticated()) return next();
+        if (req.ctx.isAuthenticated(type)) return next();
 
-        res.status(401).send();
+        errorResponse(res, 'unauthorized', 401)
     }
 }
 

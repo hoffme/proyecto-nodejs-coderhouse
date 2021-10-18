@@ -9,7 +9,7 @@ import { ItemDTO } from '../../../models/cart/dao';
 const router = Router();
 
 router.get('/', auth('client'), asyncHandler(async req => {
-    const user_id = req.user?.id || '';
+    const user_id = req.ctx.user.id;
     
     const carts = await Controllers.cart.search({ user_id });
     if (carts.length > 0) return carts[0];
@@ -18,7 +18,7 @@ router.get('/', auth('client'), asyncHandler(async req => {
 }));
 
 router.delete('/', auth('client'), asyncHandler(async req => {
-    const user_id = req.user?.id || '';
+    const user_id = req.ctx.user.id;
     
     const carts = await Controllers.cart.search({ user_id });
     if (carts.length === 0) throw new Error('cart not found');
@@ -29,7 +29,7 @@ router.delete('/', auth('client'), asyncHandler(async req => {
 }));
 
 router.post('/products', auth('client'), asyncHandler(async req => {
-    const user_id = req.user?.id || '';
+    const user_id = req.ctx.user.id;
 
     const carts = await Controllers.cart.search({ user_id });
     if (carts.length === 0) throw new Error('cart not found');
@@ -42,7 +42,7 @@ router.post('/products', auth('client'), asyncHandler(async req => {
 }));
 
 router.delete('/products/:product_id', auth('client'), asyncHandler(async req => {
-    const user_id = req.user?.id || '';
+    const user_id = req.ctx.user.id;
     
     const carts = await Controllers.cart.search({ user_id });
     if (carts.length === 0) throw new Error('cart not found');
@@ -55,7 +55,7 @@ router.delete('/products/:product_id', auth('client'), asyncHandler(async req =>
 }));
 
 router.post('/finish', auth('client'), asyncHandler(async req => {
-    const user_id = req.user?.id || '';
+    const user_id = req.ctx.user.id;
 
     const carts = await Controllers.cart.search({ user_id });
     if (carts.length === 0) throw new Error('cart not found');
@@ -64,7 +64,7 @@ router.post('/finish', auth('client'), asyncHandler(async req => {
     
     const cartFinished = await Controllers.cart.finish(cart.id);
 
-    Controllers.notifier.orderCreated(req.user!, cartFinished);
+    Controllers.notifier.orderCreated(req.ctx.user, cartFinished); // TODO
 
     return true;
 }));

@@ -1,32 +1,26 @@
 import { Router } from 'express';
 
 import Controllers from '../../../controllers/index';
-
-import { CreateUserCMD } from '../../../models/user/model';
+import { SignInParams, SignUpParams } from '../../../controllers/auth';
 
 import asyncHandler from '../utils/wrap';
 
 const router = Router();
 
 router.post('/signin', asyncHandler(async (req) => {    
-    const cmd: { email: string, password: string } = req.body;
-    
-    const user = await Controllers.user.verify(cmd.email, cmd.password);
-
-    return user;
+    const params: SignInParams = req.body;
+    const token = await Controllers.auth.signin(params);
+    return token;
 }));
 
-router.post('/signup', asyncHandler(async (req) => {    
-    const cmd: CreateUserCMD = req.body;
-    
-    const user = await Controllers.user.create(cmd);
-    Controllers.notifier.registerUser(user);
-
-    return true;
+router.post('/signup', asyncHandler(async (req) => {
+    const params: SignUpParams = req.body;
+    const token = await Controllers.auth.signup(params);
+    return token;
 }))
 
 router.post('/logout', asyncHandler(async (req) => {
-    req.logOut();
+    return await Controllers.auth.logout(req.ctx.token);
 }))
 
 export default router;

@@ -5,17 +5,6 @@ class UserController {
 
     private repository: UserRepository = new UserRepository();
 
-    async verify(email: string, password: string): Promise<User> {
-        const user = await this.repository.find({ email });
-        if (!user) throw new Error('user not found');
-
-        if (!user.validPassword(password)) {
-            throw new Error('invalid password');
-        }
-
-        return user;
-    }
-
     async find(filter: FilterUserCMD): Promise<User> {
         return this.repository.find(filter);
     }

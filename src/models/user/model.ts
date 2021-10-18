@@ -21,7 +21,6 @@ interface UpdateUser {
 }
 
 interface CreateUser {
-    id: string
     name: string
     lastname: string
     email: string
@@ -31,7 +30,7 @@ interface CreateUser {
 }
 
 class User {
-
+    
     private static dao: UserDAO;
 
     public static readonly events = {

@@ -6,11 +6,21 @@ import ProductDAOFactory from "./factories/product";
 import CartDAOFactory from "./factories/cart";
 import UserDAOFactory from "./factories/user";
 
+import UserRepository from "../models/user/repository";
+import ProductRepository from "../models/product/repository";
+import CartRepository from "../models/cart/repository";
+
 import StorageSettings from "./settings";
 
 class Storage {
 
-    public static readonly factories = {
+    public static readonly repositories = {
+        user: new UserRepository(),
+        product: new ProductRepository(),
+        cart: new CartRepository()
+    }
+
+    private static readonly factories = {
         user: new UserDAOFactory(),
         product: new ProductDAOFactory(),
         cart: new CartDAOFactory()
