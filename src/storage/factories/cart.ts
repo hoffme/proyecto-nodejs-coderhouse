@@ -3,16 +3,12 @@ import BuilderSettings from "./settings";
 import { CartDAO } from "../../core/cart/dao";
 
 import CartFileDAO from "../dao/cart/file";
-import CartFirestoreDAO from "../dao/cart/firestore";
-import CartsKnexDAO from "../dao/cart/knex";
 import CartMemoryDAO from "../dao/cart/memory";
 import CartMongooseDAO from "../dao/cart/mongoose";
 
 import FileSettings from "../settings/file";
 import MemorySettings from "../settings/memory";
 import MongooseSettings from "../settings/mongoose";
-import KnexSettings from "../settings/knex";
-import FirestoreSettings from "../settings/firestore";
 
 class CartDAOFactory {
 
@@ -29,13 +25,7 @@ class CartDAOFactory {
             const dao = new CartMongooseDAO(settings);
             await dao.setup();
             return dao;
-        },
-        knex: async (settings: KnexSettings) => {
-            const dao = new CartsKnexDAO(settings);
-            await dao.setup();
-            return dao;
-        },
-        firestore: async (settings: FirestoreSettings) => new CartFirestoreDAO(settings)
+        }
     }
 
     public static async build(settings: BuilderSettings): Promise<CartDAO> {

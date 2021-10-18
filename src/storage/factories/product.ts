@@ -3,16 +3,12 @@ import BuilderSettings from "./settings";
 import { ProductDAO } from "../../core/product/dao";
 
 import ProductFileDAO from "../dao/product/file";
-import ProductFirestoreRepository from "../dao/product/firestore";
-import ProductsKnexRepository from "../dao/product/knex";
 import ProductMemoryRepository from "../dao/product/memory";
 import ProductMongooseRepository from "../dao/product/mongoose";
 
 import MemorySettings from "../settings/memory";
 import FileSettings from "../settings/file";
 import MongooseSettings from "../settings/mongoose";
-import KnexSettings from "../settings/knex";
-import FirestoreSettings from "../settings/firestore";
 
 class ProductDAOFactory {
 
@@ -31,14 +27,7 @@ class ProductDAOFactory {
             await dao.setup();
 
             return dao;
-        },
-        knex: async (settings: KnexSettings) => {
-            const dao = new ProductsKnexRepository(settings);
-            await dao.setup();
-
-            return dao;
-        },
-        firestore: async (settings: FirestoreSettings) => new ProductFirestoreRepository(settings)
+        }
     }
 
     static async build(settings: BuilderSettings): Promise<ProductDAO> {
