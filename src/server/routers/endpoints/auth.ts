@@ -1,17 +1,20 @@
 import { Router } from 'express';
 
-import passport from 'passport';
-
 import Controllers from '../../../controllers/index';
 
 import { CreateUserCMD } from '../../../models/user/model';
 
-import successResponse from '../responses/success';
 import asyncHandler from '../utils/wrap';
 
 const router = Router();
 
-router.post('/signin', passport.authenticate('local', { failureFlash: true }), (req, res) => successResponse(res, true));
+router.post('/signin', asyncHandler(async (req) => {    
+    const cmd: { email: string, password: string } = req.body;
+    
+    const user = await Controllers.user.verify(cmd.email, cmd.password);
+
+    return user;
+}));
 
 router.post('/signup', asyncHandler(async (req) => {    
     const cmd: CreateUserCMD = req.body;
@@ -22,9 +25,8 @@ router.post('/signup', asyncHandler(async (req) => {
     return true;
 }))
 
-router.post('/logout', asyncHandler(async (req) => {    
+router.post('/logout', asyncHandler(async (req) => {
     req.logOut();
-    return true;
 }))
 
 export default router;

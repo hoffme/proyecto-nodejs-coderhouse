@@ -1,47 +1,20 @@
 import express from 'express';
 import { urlencoded, json } from 'body-parser';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
 import session from 'express-session';
-import passport from 'passport';
-import { Strategy as PassportLocal } from 'passport-local';
+import cors from 'cors';
 
 import * as UserModel from '../../models/user/model';
 
-import Controllers from '../../controllers/index';
-
 import RouterSettings from './settings';
-import apiRouter from './api';
+
+import router from './api';
 
 declare global {
     namespace Express {
         interface User extends UserModel.default {}
     }
 }
-
-passport.use(new PassportLocal(
-    {
-        usernameField: 'email',
-        passwordField: 'password'
-    },
-    (username, password, done) => {
-        Controllers.user.verify(username, password)
-            .then(user => done(null, user))
-            .catch(err => done(err, null, err))
-    }
-));
-
-passport.serializeUser((user, done) => { done(null, user.id) });
-
-passport.deserializeUser((id: string, done) => {
-    Controllers.user.find({ id })
-        .then(user => {
-            if(!user) done(new Error('user not found'), null);
-            done(null, user);   
-        })
-        .catch(err => done(err, null))
-});
-
 const createRouter = async (settings: RouterSettings) => {
     const app = express();
 
@@ -57,11 +30,8 @@ const createRouter = async (settings: RouterSettings) => {
         resave: false,
         saveUninitialized: false,
     }));
-    
-    app.use(passport.initialize());
-    app.use(passport.session());
 
-    app.use('/api', apiRouter);
+    app.use('/api', router);
 
     return app;
 }
