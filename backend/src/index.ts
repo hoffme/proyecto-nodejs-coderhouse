@@ -16,5 +16,5 @@ if (settings.cluster && cluster.isMaster) {
         console.log(`worker ${worker.process.pid} died with code ${code}`);
     })
 } else {
-    runner(settings);
+    runner(settings).catch(console.error);
 }
