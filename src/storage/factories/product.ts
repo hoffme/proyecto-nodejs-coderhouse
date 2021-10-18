@@ -1,6 +1,6 @@
 import BuilderSettings from "./settings";
 
-import { ProductDAO } from "../../core/product/dao";
+import { ProductDAO } from "../../models/product/dao";
 
 import ProductFileDAO from "../dao/product/file";
 import ProductMemoryRepository from "../dao/product/memory";

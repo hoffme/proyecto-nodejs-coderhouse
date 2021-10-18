@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../core/user/dao';
+import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
 
 import MongooseSettings from '../../settings/mongoose';
 

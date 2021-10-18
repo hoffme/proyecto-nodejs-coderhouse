@@ -4,7 +4,7 @@ import auth from '../middlewares/auth';
 import asyncHandler from '../utils/wrap';
 
 import Controllers from '../../../controllers/index';
-import { ItemDTO } from '../../../core/cart/dao';
+import { ItemDTO } from '../../../models/cart/dao';
 
 const router = Router();
 

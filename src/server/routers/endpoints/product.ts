@@ -4,7 +4,7 @@ import auth from '../middlewares/auth';
 import asyncHandler from '../utils/wrap';
 
 import Controllers from '../../../controllers';
-import { CreateProductCMD, FilterProductCMD, UpdateProductCMD } from '../../../core/product/model';
+import { CreateProductCMD, FilterProductCMD, UpdateProductCMD } from '../../../models/product/model';
 
 const router = Router();
 

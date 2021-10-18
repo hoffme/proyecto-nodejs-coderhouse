@@ -1,4 +1,4 @@
-import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../core/user/dao';
+import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
 
 import FileSettings from '../../settings/file';
 

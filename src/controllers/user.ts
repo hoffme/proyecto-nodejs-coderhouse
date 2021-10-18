@@ -1,5 +1,5 @@
-import User, { CreateUserCMD, FilterUserCMD, UpdateUserCMD } from '../core/user/model';
-import UserRepository from '../core/user/repository';
+import User, { CreateUserCMD, FilterUserCMD, UpdateUserCMD } from '../models/user/model';
+import UserRepository from '../models/user/repository';
 
 class UserController {
 

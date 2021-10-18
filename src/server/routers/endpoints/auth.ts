@@ -4,7 +4,7 @@ import passport from 'passport';
 
 import Controllers from '../../../controllers/index';
 
-import { CreateUserCMD } from '../../../core/user/model';
+import { CreateUserCMD } from '../../../models/user/model';
 
 import successResponse from '../responses/success';
 import asyncHandler from '../utils/wrap';

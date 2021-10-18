@@ -1,4 +1,4 @@
-import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../core/product/dao';
+import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../models/product/dao';
 
 import MemorySettings from "../../settings/memory";
 

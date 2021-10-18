@@ -1,6 +1,6 @@
 import BuilderSettings from "./settings";
 
-import { UserDAO } from "../../core/user/dao";
+import { UserDAO } from "../../models/user/dao";
 
 import CartFileRepository from "../dao/user/file";
 import CartMemoryRepository from "../dao/user/memory";

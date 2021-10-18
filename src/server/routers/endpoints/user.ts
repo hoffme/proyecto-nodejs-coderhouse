@@ -5,7 +5,7 @@ import auth from '../middlewares/auth';
 import asyncHandler from '../utils/wrap';
 
 import Controllers from '../../../controllers';
-import { UpdateUserCMD } from '../../../core/user/model';
+import { UpdateUserCMD } from '../../../models/user/model';
 
 const router = Router();
 

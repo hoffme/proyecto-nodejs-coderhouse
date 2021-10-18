@@ -3,9 +3,9 @@ import CartController from "./cart";
 import UserController from "./user";
 import NotifierController from "./notificator";
 
-import User from "../core/user/model";
-import Product from "../core/product/model";
-import Cart from "../core/cart/model";
+import User from "../models/user/model";
+import Product from "../models/product/model";
+import Cart from "../models/cart/model";
 
 import ProductDAOFactory from "../storage/factories/product";
 import CartDAOFactory from "../storage/factories/cart";

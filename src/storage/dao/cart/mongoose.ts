@@ -1,6 +1,6 @@
 import mongoose, { CallbackError, Schema } from 'mongoose';
 
-import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../core/cart/dao';
+import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
 
 import MongooseSettings from '../../settings/mongoose';
 

@@ -6,7 +6,7 @@ import session from 'express-session';
 import passport from 'passport';
 import { Strategy as PassportLocal } from 'passport-local';
 
-import * as UserModel from '../../core/user/model';
+import * as UserModel from '../../models/user/model';
 
 import Controllers from '../../controllers/index';
 

@@ -1,7 +1,7 @@
-import EventCore from "../core/generics/events";
+import EventCore from "../models/generics/events";
 
-import ProductRepository from "../core/product/repository";
-import Product, { CreateProductCMD, FilterProductCMD, UpdateProductCMD } from "../core/product/model";
+import ProductRepository from "../models/product/repository";
+import Product, { CreateProductCMD, FilterProductCMD, UpdateProductCMD } from "../models/product/model";
 
 class ProductsController {
 

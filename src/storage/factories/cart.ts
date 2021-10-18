@@ -1,6 +1,6 @@
 import BuilderSettings from "./settings";
 
-import { CartDAO } from "../../core/cart/dao";
+import { CartDAO } from "../../models/cart/dao";
 
 import CartFileDAO from "../dao/cart/file";
 import CartMemoryDAO from "../dao/cart/memory";
