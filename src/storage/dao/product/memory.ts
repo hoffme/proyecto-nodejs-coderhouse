@@ -1,6 +1,6 @@
-import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../models/product/dao';
+import { DAOMemorySettings } from '../../../models/storage/settings';
 
-import MemorySettings from "../../settings/memory";
+import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../models/product/dao';
 
 import uuid from "../../utils/uuid";
 
@@ -8,7 +8,7 @@ class ProductMemoryRepository implements ProductDAO {
 
     private items: ProductDTO[];
     
-    constructor(settings: MemorySettings) {
+    constructor(settings: DAOMemorySettings) {
         this.items = [];
     }
     

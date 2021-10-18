@@ -1,6 +1,6 @@
-import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
+import { DAOMemorySettings } from '../../../models/storage/settings';
 
-import MemorySettings from '../../settings/memory';
+import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
 
 import uuid from '../../utils/uuid';
 
@@ -8,7 +8,7 @@ class UserMemoryDAO implements UserDAO {
 
     private items: UserDTO[];
     
-    constructor(settings: MemorySettings) {
+    constructor(settings: DAOMemorySettings) {
         this.items = [];
     }
 

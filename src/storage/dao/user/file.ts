@@ -1,6 +1,6 @@
-import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
+import { DAOFileSettings } from '../../../models/storage/settings';
 
-import FileSettings from '../../settings/file';
+import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
 
 import FileStorage from '../../utils/file';
 import uuid from '../../utils/uuid';
@@ -9,7 +9,7 @@ class UserFileDAO implements UserDAO {
 
     private file: FileStorage<UserDTO[]>
 
-    constructor(settings: FileSettings) {
+    constructor(settings: DAOFileSettings) {
         this.file = new FileStorage(settings.path);
     }
     

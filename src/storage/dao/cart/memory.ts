@@ -1,6 +1,6 @@
-import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
+import { DAOMemorySettings } from '../../../models/storage/settings';
 
-import MemorySettings from "../../settings/memory";
+import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
 
 import uuid from "../../utils/uuid";
 
@@ -8,7 +8,7 @@ class CartMemoryDAO implements CartDAO {
     
     private items: CartDTO[];
     
-    constructor(settings: MemorySettings) {
+    constructor(settings: DAOMemorySettings) {
         this.items = [];
     }
     

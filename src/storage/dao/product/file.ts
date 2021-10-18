@@ -1,6 +1,6 @@
-import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../models/product/dao';
+import { DAOFileSettings } from '../../../models/storage/settings';
 
-import FileSettings from '../../settings/file';
+import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../models/product/dao';
 
 import FileStorage from '../../utils/file';
 import uuid from '../../utils/uuid';
@@ -9,7 +9,7 @@ class ProductFileDAO implements ProductDAO {
 
     private file: FileStorage<{[id: string]: ProductDTO}>
 
-    constructor(settings: FileSettings) {
+    constructor(settings: DAOFileSettings) {
         this.file = new FileStorage(settings.path);
     }
     

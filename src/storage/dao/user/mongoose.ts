@@ -1,8 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
 
-import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
+import { DAOMongoSettings } from '../../../models/storage/settings';
 
-import MongooseSettings from '../../settings/mongoose';
+import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
 
 interface UserMongoose {
     _id: mongoose.Types.ObjectId
@@ -38,12 +38,12 @@ const toModel = (mongo: UserMongoose): UserDTO => {
 
 class ProductMongooseDAO implements UserDAO {
 
-    private readonly settings: MongooseSettings;
+    private readonly settings: DAOMongoSettings;
     private readonly collectionName: string;
     private readonly schema: Schema<UserMongoose>;
     private readonly collection: mongoose.Model<UserMongoose>;
 
-    constructor(settings: MongooseSettings) {
+    constructor(settings: DAOMongoSettings) {
         this.settings = settings;
         this.collectionName = 'users';
 

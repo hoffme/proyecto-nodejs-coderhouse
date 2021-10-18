@@ -1,6 +1,6 @@
-import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
+import { DAOFileSettings } from '../../../models/storage/settings';
 
-import FileSettings from '../../settings/file';
+import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
 
 import FileStorage from '../../utils/file';
 import uuid from '../../utils/uuid';
@@ -9,7 +9,7 @@ class CartFileDAO implements CartDAO {
     
     private file: FileStorage<{[id: string]: CartDTO}>
 
-    constructor(setting: FileSettings) {
+    constructor(setting: DAOFileSettings) {
         this.file = new FileStorage(setting.path);
     }
     

@@ -1,8 +1,8 @@
 import mongoose, { CallbackError, Schema } from 'mongoose';
 
-import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
+import { DAOMongoSettings } from '../../../models/storage/settings';
 
-import MongooseSettings from '../../settings/mongoose';
+import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
 
 interface CartMongoose {
     _id: mongoose.Types.ObjectId
@@ -22,7 +22,7 @@ const toModel = (data: CartMongoose): CartDTO => {
 
 class CartMongooseDAO implements CartDAO {
     
-    private readonly settings: MongooseSettings;
+    private readonly settings: DAOMongoSettings;
     private readonly collectionName: string;
 
     private readonly collection: mongoose.Model<CartMongoose>;
@@ -30,7 +30,7 @@ class CartMongooseDAO implements CartDAO {
     private readonly itemSchema: Schema<ItemDTO>;
     private readonly schema: Schema<CartMongoose>;
 
-    constructor(settings: MongooseSettings) {
+    constructor(settings: DAOMongoSettings) {
         this.settings = settings;
         this.collectionName = 'carts';
 
