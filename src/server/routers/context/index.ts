@@ -1,22 +1,49 @@
+import { Request } from "express";
+import Controllers from "../../../controllers";
+
 import { UserToken } from "../../../controllers/auth";
+
 import User from "../../../models/user/model";
+
+interface UserData {
+    token: UserToken
+    user: User
+}
 
 class Context {
 
-    private readonly _token?: UserToken;
+    private readonly user_data?: UserData
+
+    public static async build(req: Request): Promise<Context> {
+        let data: UserData | undefined;
+
+        const token = req.session.token;
+        if (token) {
+            const user = await Controllers.auth.getUser(token);
+
+            data = { token, user };
+        }
+
+        return new Context(data);
+    }
+
+    private constructor(data?: UserData) {
+        this.user_data = data;
+    }
 
     public get token(): UserToken {
-        if (!this._token) throw new Error('user not logged');
-        return this._token;
+        if (!this.user_data) throw new Error('user not logged');
+        return this.user_data.token;
     }
 
     public get user(): User {
-        if (!this._token) throw new Error('user not logged');
-        return ({} as any); // TODO
+        if (!this.user_data) throw new Error('user not logged');
+        return this.user_data.user;
     }
 
     public isAuthenticated(userType: string): boolean {
-        return false;
+        if (!this.user_data) throw new Error('user not logged');
+        return this.user_data.user.name === userType;
     }
 
 }

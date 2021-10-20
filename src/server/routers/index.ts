@@ -1,8 +1,10 @@
 import express from 'express';
 import { urlencoded, json } from 'body-parser';
 import cookieParser from 'cookie-parser';
-import session from 'express-session';
+import session, { Session, SessionData } from 'express-session';
 import cors from 'cors';
+
+import { UserToken } from '../../controllers/auth';
 
 import Context from './context';
 import CTXMiddleware from './context/middleware';
@@ -26,6 +28,12 @@ declare global {
     }
 }
 
+declare module 'express-session' {
+    interface SessionData {
+        token?: UserToken
+    }
+}
+
 const createRouter = async (settings: Settings) => {
     const app = express();
 
@@ -38,8 +46,8 @@ const createRouter = async (settings: Settings) => {
     app.use(cookieParser(settings.session_secret));
     app.use(session({
         secret: settings.session_secret,
-        resave: false,
-        saveUninitialized: false,
+        resave: true,
+        saveUninitialized: true,
     }));
 
     app.use(CTXMiddleware);

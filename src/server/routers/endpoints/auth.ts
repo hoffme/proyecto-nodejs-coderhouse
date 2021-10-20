@@ -9,18 +9,35 @@ const router = Router();
 
 router.post('/signin', asyncHandler(async (req) => {    
     const params: SignInParams = req.body;
+    
     const token = await Controllers.auth.signin(params);
+
+    req.session.token = token;
+    
     return token;
 }));
 
 router.post('/signup', asyncHandler(async (req) => {
     const params: SignUpParams = req.body;
-    const token = await Controllers.auth.signup(params);
+    
+    await Controllers.auth.signup(params);
+    
+    const token = await Controllers.auth.signin({
+        email: params.email,
+        password: params.password
+    });
+
+    req.session.token = token;
+    
     return token;
 }))
 
 router.post('/logout', asyncHandler(async (req) => {
-    return await Controllers.auth.logout(req.ctx.token);
+    await Controllers.auth.logout(req.ctx.token);
+    
+    req.session.destroy(() => {});
+    
+    return true;
 }))
 
 export default router;
