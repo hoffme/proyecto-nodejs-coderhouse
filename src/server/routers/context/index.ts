@@ -3,7 +3,7 @@ import Controllers from "../../../controllers";
 
 import { UserToken } from "../../../controllers/auth";
 
-import User from "../../../models/user/model";
+import User, { UserType } from "../../../models/user/model";
 
 interface UserData {
     token: UserToken
@@ -41,9 +41,9 @@ class Context {
         return this.user_data.user;
     }
 
-    public isAuthenticated(userType: string): boolean {
+    public isAuthenticated(userType: UserType): boolean {
         if (!this.user_data) throw new Error('user not logged');
-        return this.user_data.user.name === userType;
+        return this.user_data.user.type === userType;
     }
 
 }

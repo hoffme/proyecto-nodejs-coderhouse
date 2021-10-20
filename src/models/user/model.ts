@@ -2,30 +2,24 @@ import bcrypt from 'bcrypt';
 
 import { EventManager } from '../../utils/events';
 
-import { CreateUserCMD, FilterUserCMD, UserAddressDTO, UserDAO, UserDTO } from "./dao";
+import { FilterUserCMD, UserDAO, UserDTO } from "./dao";
+
+type UserType = 'admin' | 'client';
 
 interface UpdateUser {
+    type?: UserType
     name?: string
     lastname?: string
     email?: string
     phone?: string
-    age?: string
-    avatar?: string
-    address?: {
-        country?: string
-        city?: string
-        street?: string
-        number?: string
-        aditional?: string
-    }
 }
 
 interface CreateUser {
+    type: UserType
     name: string
     lastname: string
     email: string
     phone: string
-    age: string
     password: string
 }
 
@@ -61,18 +55,12 @@ class User {
     }
 
     public static async create(fields: CreateUser): Promise<User> {
-        const params: CreateUserCMD = {
+        const params: any = {
             ...fields,
-            avatar: '',
-            address: {
-                country: '',
-                city: '',
-                street: '',
-                number: '',
-                aditional: '',
-            },
             hash: await bcrypt.hash(fields.password, 10)
         }
+
+        delete params['password'];
 
         const dto = await User.dao.create(params);
         const user = new User(dto);
@@ -92,14 +80,11 @@ class User {
     }
     
     public get id(): string { return this._data.id }
+    public get type(): string { return this._data.type }
     public get name(): string { return this._data.name }
     public get lastname(): string { return this._data.lastname }
     public get email(): string { return this._data.email }
     public get phone(): string { return this._data.phone }
-    public get age(): string { return this._data.age }
-    public get avatar(): string { return this._data.avatar }
-    public get address(): UserAddressDTO { return this._data.address }
-
     public get deleted(): boolean { return this._deleted }
 
     public async update(fields: UpdateUser): Promise<void> {
@@ -122,19 +107,11 @@ class User {
     public json() {
         return {
             id: this._data.id || '',
+            type: this._data.type || '',
             name: this._data.name || '',
             lastname: this._data.lastname || '',
             email: this._data.email || '',
-            phone: this._data.phone || '',
-            age: this._data.age || '',
-            avatar: this._data.avatar || '',
-            address: {
-                country: this._data.address?.country || '',
-                city: this._data.address?.city || '',
-                street: this._data.address?.street || '',
-                number: this._data.address?.number || '',
-                aditional: this._data.address?.aditional || '',
-            }
+            phone: this._data.phone || ''
         }
     }
 
@@ -142,8 +119,8 @@ class User {
 
 export default User;
 export type {
+    UserType,
     CreateUser as CreateUserCMD,
     UpdateUser as UpdateUserCMD,
-    FilterUserCMD,
-    UserAddressDTO as UserAddress
+    FilterUserCMD
 }

@@ -63,16 +63,8 @@ class UserFileDAO implements UserDAO {
                 lastname: update.lastname || user.lastname,
                 phone: update.phone || user.phone,
                 email: update.email || user.email,
-                age: update.age || user.age,
-                avatar: update.avatar || user.avatar,
                 hash: update.hash || user.hash,
-                address: {
-                    country: update.address?.country || user.address.country,
-                    city: update.address?.city || user.address.city,
-                    street: update.address?.street || user.address.street,
-                    number: update.address?.number || user.address.number,
-                    aditional: update.address?.aditional || user.address.aditional,
-                }
+                type: update.type || user.type
             };
 
             return userUpdated;
