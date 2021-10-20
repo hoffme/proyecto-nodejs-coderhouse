@@ -41,6 +41,9 @@ const settings: Settings = {
         },
     },
     controllers: {
+        auth: {
+            jwt_secret: 'shhhhhh'
+        },
         notificator: {
             senders: {
                 // mail: {

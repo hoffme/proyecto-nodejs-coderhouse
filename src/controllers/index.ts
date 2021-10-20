@@ -15,7 +15,7 @@ class Controllers {
     static notifier: NotifierController;
 
     static async setup(settings: ControllerSettings) {
-        Controllers.auth = new AuthController();
+        Controllers.auth = new AuthController(settings.auth);
         Controllers.user = new UserController();
         Controllers.products = new ProductsController();
         Controllers.cart = new CartController();
