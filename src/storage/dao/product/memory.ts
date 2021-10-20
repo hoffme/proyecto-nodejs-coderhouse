@@ -2,7 +2,7 @@ import { DAOMemorySettings } from '../../../models/storage/settings';
 
 import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../models/product/dao';
 
-import uuid from "../../utils/uuid";
+import uuid from "../../../utils/uuid";
 
 class ProductMemoryRepository implements ProductDAO {
 

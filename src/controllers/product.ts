@@ -1,27 +1,9 @@
-import EventCore from "../models/generics/events";
-
 import ProductRepository from "../models/product/repository";
 import Product, { CreateProductCMD, FilterProductCMD, UpdateProductCMD } from "../models/product/model";
 
 class ProductsController {
 
-    private readonly repository: ProductRepository;
-
-    public readonly events: {
-        create: EventCore<Product>
-        update: EventCore<Product>
-        delete: EventCore<Product>
-    }
-
-    constructor() {
-        this.repository = new ProductRepository();
-
-        this.events = {
-            create: Product.events.create,
-            update: Product.events.update,
-            delete: Product.events.delete,
-        }
-    }
+    private readonly repository: ProductRepository = new ProductRepository();
 
     async search(filter: FilterProductCMD): Promise<Product[]> {
         return await this.repository.search(filter);

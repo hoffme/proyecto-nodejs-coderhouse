@@ -1,4 +1,4 @@
-import EventCore from "../generics/events";
+import { EventManager } from "../../utils/events";
 
 import Product from "../product/model";
 
@@ -13,10 +13,18 @@ class Cart {
 
     private static dao: CartDAO;
 
-    public static readonly events = {
-        create: new EventCore<Cart>('create'),
-        update: new EventCore<Cart>('update'),
-        delete: new EventCore<Cart>('delete')
+    private static readonly events = {
+        create: new EventManager<Cart>(),
+        update: new EventManager<Cart>(),
+        delete: new EventManager<Cart>()
+    }
+
+    public static get on() {
+        return {
+            create: this.events.create.register,
+            update: this.events.update.register,
+            delete: this.events.delete.register
+        }
     }
     
     private _data: CartDTO;

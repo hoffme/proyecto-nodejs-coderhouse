@@ -2,8 +2,8 @@ import { DAOFileSettings } from '../../../models/storage/settings';
 
 import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
 
-import FileStorage from '../../utils/file';
-import uuid from '../../utils/uuid';
+import FileStorage from '../../../utils/file';
+import uuid from '../../../utils/uuid';
 
 class CartFileDAO implements CartDAO {
     

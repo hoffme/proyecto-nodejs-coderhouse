@@ -2,8 +2,8 @@ import { DAOFileSettings } from '../../../models/storage/settings';
 
 import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
 
-import FileStorage from '../../utils/file';
-import uuid from '../../utils/uuid';
+import FileStorage from '../../../utils/file';
+import uuid from '../../../utils/uuid';
 
 class UserFileDAO implements UserDAO {
 

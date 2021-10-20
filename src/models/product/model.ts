@@ -1,4 +1,4 @@
-import EventCore from "../generics/events";
+import { EventManager } from "../../utils/events";
 
 import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from "./dao";
 
@@ -7,9 +7,17 @@ class Product {
     private static dao: ProductDAO;
 
     public static readonly events = {
-        create: new EventCore<Product>('create'),
-        update: new EventCore<Product>('update'),
-        delete: new EventCore<Product>('delete')
+        create: new EventManager<Product>(),
+        update: new EventManager<Product>(),
+        delete: new EventManager<Product>()
+    }
+
+    public static get on() {
+        return {
+            create: this.events.create.register,
+            update: this.events.update.register,
+            delete: this.events.delete.register
+        }
     }
     
     private _data: ProductDTO;

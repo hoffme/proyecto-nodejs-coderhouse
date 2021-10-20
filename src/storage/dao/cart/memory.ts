@@ -2,7 +2,7 @@ import { DAOMemorySettings } from '../../../models/storage/settings';
 
 import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
 
-import uuid from "../../utils/uuid";
+import uuid from "../../../utils/uuid";
 
 class CartMemoryDAO implements CartDAO {
     

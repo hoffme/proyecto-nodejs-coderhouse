@@ -2,8 +2,8 @@ import { DAOFileSettings } from '../../../models/storage/settings';
 
 import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../models/product/dao';
 
-import FileStorage from '../../utils/file';
-import uuid from '../../utils/uuid';
+import FileStorage from '../../../utils/file';
+import uuid from '../../../utils/uuid';
 
 class ProductFileDAO implements ProductDAO {
 

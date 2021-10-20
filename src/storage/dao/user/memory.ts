@@ -2,7 +2,7 @@ import { DAOMemorySettings } from '../../../models/storage/settings';
 
 import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
 
-import uuid from '../../utils/uuid';
+import uuid from '../../../utils/uuid';
 
 class UserMemoryDAO implements UserDAO {
 

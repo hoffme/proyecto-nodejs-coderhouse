@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 
-import EventCore from "../generics/events";
+import { EventManager } from '../../utils/events';
 
-import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserAddressDTO, UserDAO, UserDTO } from "./dao";
+import { CreateUserCMD, FilterUserCMD, UserAddressDTO, UserDAO, UserDTO } from "./dao";
 
 interface UpdateUser {
     name?: string
@@ -34,9 +34,17 @@ class User {
     private static dao: UserDAO;
 
     public static readonly events = {
-        create: new EventCore<User>('create'),
-        update: new EventCore<User>('update'),
-        delete: new EventCore<User>('delete')
+        create: new EventManager<User>(),
+        update: new EventManager<User>(),
+        delete: new EventManager<User>()
+    }
+
+    public static get on() {
+        return {
+            create: this.events.create.register,
+            update: this.events.update.register,
+            delete: this.events.delete.register
+        }
     }
     
     private _data: UserDTO;
