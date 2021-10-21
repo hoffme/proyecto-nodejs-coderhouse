@@ -1,48 +1,52 @@
 import Storage from '../storage';
 
-import Cart, { CreateCartCMD, FilterCartCMD, UpdateCartCMD } from '../models/cart/model';
+import Cart, { FilterCartCMD } from '../models/cart/model';
+import { AddressDTO } from '../models/cart/dao';
 
 class CartController {
-
-    async find(id: string): Promise<Cart> {
-        return await Storage.repositories.cart.find(id);
-    }
 
     async search(filter: FilterCartCMD): Promise<Cart[]> {
         return await Storage.repositories.cart.search(filter);
     }
 
-    async create(cmd: CreateCartCMD): Promise<Cart> {
-        return await Storage.repositories.cart.create(cmd);
+    async get(user_id: string): Promise<Cart> {
+        const carts = await Storage.repositories.cart.search({ user_id });
+        if (carts.length > 0) return carts[0];
+
+        return await Storage.repositories.cart.create({
+            user_id,
+            items_ref: [],
+            address: {
+                city: '',
+                zip_code: '',
+                street: '',
+                number: '',
+                indications: ''
+            },
+            total: 0
+        });
     }
 
-    async update(id: string, update: UpdateCartCMD): Promise<Cart> {
-        return await Storage.repositories.cart.update(id, update);
-    }
-
-    async finish(id: string): Promise<Cart> {
+    async finish(id: string) {
         const cart = await Storage.repositories.cart.find(id);
-
-        // TODO: guardar en otra coleccion de ordenes
-
-        return cart;
+        return cart.finish();
     }
 
-    async clear(id: string): Promise<Cart> {
-        return await Storage.repositories.cart.clear(id);
-    }
-
-    async setItem(cart_id: string, product_id: string, quantity: number): Promise<void> {
-        const cart = await Storage.repositories.cart.find(cart_id);
-
+    async setItem(id: string, product_id: string, quantity: number): Promise<void> {
+        const cart = await Storage.repositories.cart.find(id);
         await cart.setItem(product_id, quantity);
     }
 
-    async remItem(cart_id: string, product_id: string): Promise<void> {
-        const cart = await Storage.repositories.cart.find(cart_id);
-
-        await cart.remItem(product_id);
+    async setAddress(id: string, address: AddressDTO): Promise<void> {
+        const cart = await Storage.repositories.cart.find(id);
+        await cart.setAddress(address);
     }
+
+    async clear(id: string): Promise<void> {
+        const cart = await Storage.repositories.cart.find(id);
+        await cart.clear();
+    }
+
 }
 
 export default CartController;

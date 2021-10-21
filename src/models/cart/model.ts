@@ -2,7 +2,7 @@ import { EventManager } from "../../utils/events";
 
 import Product from "../product/model";
 
-import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from "./dao";
+import { AddressDTO, CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from "./dao";
 
 interface Item {
     product: Product
@@ -62,45 +62,69 @@ class Cart {
     public get user_id(): string { return this._data.user_id }
     public get timestamp(): Date { return this._data.timestamp }
     public get items_ref(): ItemDTO[] { return this._data.items_ref }
+    public get address(): AddressDTO { return this._data.address }
+    public get cost(): number { return this._data.total }
 
     public async items(): Promise<Item[]> {
         const products = await Product.search({ ids: this.items_ref.map(item => item.product_id) });
         
-        const quantities = Object.fromEntries(this._data.items_ref.map(item => [item.product_id, item.count]))
+        const quantities = Object.fromEntries(this._data.items_ref.map(item => [item.product_id, item.quantity]))
         
         return products.map(product => ({ product, quantity: quantities[product.id] || 0 }));
     }
 
     public get deleted(): boolean { return this._deleted }
 
-    public async update(fields: UpdateCartCMD): Promise<void> {
-        this._data = await Cart.dao.update(this._data.id, fields);
-    
-        Cart.events.update.notify(this);
+    public async setAddress(address: AddressDTO): Promise<void> {
+        this._data.address = address;
+
+        await this.update();
     }
 
-    public async setItem(product_id: string, count: number): Promise<void> {
-        await Cart.dao.setItem(this._data.id, { product_id, count });
+    public async setItem(product_id: string, quantity: number): Promise<void> {
+        const product = await Product.getById(product_id);
+        const total = product.price * quantity;
 
-        this._data = await Cart.dao.find(this._data.id);
-    
-        Cart.events.update.notify(this);
-    }
+        const item: ItemDTO = { product_id, quantity, total };
 
-    public async remItem(productId: string): Promise<void> {
-        await Cart.dao.remItem(this._data.id, productId);
+        let added = false;
+        this._data.items_ref = this._data.items_ref.map(item => {
+            if (item.product_id !== item.product_id) return item;
+            
+            added = true;
+            return item;
+        })
 
-        this._data = await Cart.dao.find(this._data.id);
-    
-        Cart.events.update.notify(this);
+        if (!added) this._data.items_ref.push(item);
+
+        this._data.total = this._data.items_ref.reduce((total, item) => total + item.total, 0);
+
+        await this.update();
     }
 
     public async clear(): Promise<void> {
-        await Cart.dao.clear(this._data.id);
-        this._deleted = true;
-    
-        Cart.events.delete.notify(this);
+        this._data.items_ref = [];
+        this._data.address = { city: '', zip_code: '', street: '', number: '', indications: '' };
+        this._data.total = 0;
+
+        await this.update();
     }
+
+    public async finish(): Promise<void> {
+        
+    }
+
+    private async update(): Promise<void> {
+        await Cart.dao.update(this._data.id, {
+            items_ref: this._data.items_ref,
+            address: this._data.address,
+            total: this._data.total
+        });
+
+        Cart.events.update.notify(this);
+    }
+
+    json(): any { return { ...this._data } }
 
 }
 

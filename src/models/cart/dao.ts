@@ -2,17 +2,31 @@ interface FilterCartCMD {
     user_id?: string
 }
 
+interface ItemDTO {
+    product_id: string
+    quantity: number
+    total: number
+}
+
+interface AddressDTO {
+    city: string
+    zip_code: string
+    street: string
+    number: string
+    indications: string
+}
+
 interface CreateCartCMD {
     user_id: string
+    items_ref: ItemDTO[]
+    address: AddressDTO
+    total: number
 }
 
 interface UpdateCartCMD {
-    user_id?: string
-}
-
-interface ItemDTO {
-    product_id: string
-    count: number
+    items_ref?: ItemDTO[]
+    address?: AddressDTO
+    total?: number
 }
 
 interface CartDTO {
@@ -20,21 +34,20 @@ interface CartDTO {
     user_id: string
     timestamp: Date
     items_ref: ItemDTO[]
+    address: AddressDTO
+    total: number
 }
 
 interface CartDAO {
     find(id: String): Promise<CartDTO>
     search(filter: FilterCartCMD): Promise<CartDTO[]>
-
     create(cmd: CreateCartCMD): Promise<CartDTO>
     update(id: string, cmd: UpdateCartCMD): Promise<CartDTO>
-    clear(id: string): Promise<CartDTO>
-
-    setItem(id: string, item: ItemDTO): Promise<ItemDTO>
-    remItem(id: string, product_id: string): Promise<ItemDTO>
+    delete(id: string): Promise<CartDTO>
 }
 
 export type {
+    AddressDTO,
     FilterCartCMD,
     CreateCartCMD,
     UpdateCartCMD,

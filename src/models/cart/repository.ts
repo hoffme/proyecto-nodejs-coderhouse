@@ -13,18 +13,7 @@ class CartRepository {
     public async create(fields: CreateCartCMD): Promise<Cart> {
         return Cart.create(fields);
     }
-
-    public async update(id: string, cmd: UpdateCartCMD): Promise<Cart> {
-        const cart = await Cart.getById(id);
-        await cart.update(cmd);
-        return cart;
-    }
-
-    public async clear(id: string): Promise<Cart> {
-        const cart = await Cart.getById(id);
-        await cart.clear();
-        return cart;
-    }
+    
 }
 
 export default CartRepository;

@@ -41,7 +41,6 @@ class CartFileDAO implements CartDAO {
         const cart: CartDTO = {
             id: uuid(),
             timestamp: new Date(),
-            items_ref: [],
             ...cmd
         }
 
@@ -64,56 +63,16 @@ class CartFileDAO implements CartDAO {
         return items[id];
     }
 
-    async clear(id: string): Promise<CartDTO> {
-        const items = await this.file.get();
-        if (!items[id]) throw new Error('cart not found');
-
-        items[id].items_ref = [];
-        items[id].timestamp = new Date();
-    
-        await this.file.set(items);
-
-        return items[id];
-    }
-
-    async setItem(id: string, newItem: ItemDTO): Promise<ItemDTO> {
-        const items = await this.file.get();
-        const cart = items[id];
-        if (!cart) throw new Error('cart not found');
-
-        let added = false;
-        cart.items_ref = cart.items_ref.map(item => {
-            if (item.product_id !== item.product_id) return item;
-            
-            added = true;
-            return newItem;
-        })
-
-        if (!added) cart.items_ref.push(newItem);
-
-        await this.file.set(items);
-
-        return newItem;
-    }
-
-    async remItem(id: string, product_id: string): Promise<ItemDTO> {
+    async delete(id: string): Promise<CartDTO> {
         const items = await this.file.get();
         if (!items[id]) throw new Error('cart not found');
         
-        let result: ItemDTO | undefined = undefined;
+        const model = items[id];
+        delete items[id];
 
-        items[id].items_ref = items[id].items_ref.filter(item => {
-            if (item.product_id !== product_id) return true;
-            
-            result = item;
-            return false;
-        });
-
-        if (!result) throw new Error('item not found');
-    
         await this.file.set(items);
 
-        return result;
+        return model;
     }
 }
 

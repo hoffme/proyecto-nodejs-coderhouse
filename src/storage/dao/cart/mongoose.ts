@@ -2,21 +2,25 @@ import mongoose, { CallbackError, Schema } from 'mongoose';
 
 import { DAOMongoSettings } from '../../../models/storage/settings';
 
-import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
+import { AddressDTO, CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
 
 interface CartMongoose {
     _id: mongoose.Types.ObjectId
     timestamp: Date
     user_id: string
-    items_ref: ItemDTO[]
+    items_ref: ItemDTO[],
+    address: AddressDTO,
+    total: number
 }
 
 const toModel = (data: CartMongoose): CartDTO => {
     return  {
         id: data._id?.toHexString() || '',
         timestamp: data.timestamp,
-        user_id: data.user_id?.toString() || '',
-        items_ref: data.items_ref || undefined
+        user_id: data.user_id,
+        items_ref: data.items_ref,
+        address: data.address,
+        total: data.total
     }
 }
 
@@ -78,7 +82,6 @@ class CartMongooseDAO implements CartDAO {
     async create(cmd: CreateCartCMD): Promise<CartDTO> {
         const inserted = await this.collection.create({
             timestamp: new Date(),
-            items_ref: [],
             ...cmd
         });
 
@@ -89,60 +92,24 @@ class CartMongooseDAO implements CartDAO {
         const cart = await this.collection.findById(id);
         if (!cart) throw new Error('cart not found');
 
-        cart.user_id = cmd.user_id || cart.user_id;
+        cart.address = cmd.address || cart.address;
+        cart.items_ref = cmd.items_ref || cart.items_ref;
+        cart.total = cmd.total || cart.total;
 
         await cart.save();
 
         return toModel(cart);
     }
-
-    async clear(id: string): Promise<CartDTO> {
-        const cart = await this.collection.findById(id);
-        if (!cart) throw new Error('cart not found');
-
-        cart.items_ref = [];
-
-        await cart.save();
-
-        return toModel(cart);
-    }
-
-    async setItem(id: string, item: ItemDTO): Promise<ItemDTO> {
-        const cart = await this.collection.findById(id);
-        if (!cart) throw new Error('cart not found');
-        
-        let added = false;
-        cart.items_ref = cart.items_ref.map(item => {
-            if (item.product_id !== item.product_id) return item;
-            
-            added = true;
-            return item;
-        })
-
-        if (!added) cart.items_ref.push(item);
-        
-        await cart.save();
-
-        return item;
-    }
-
-    async remItem(id: string, product_id: string): Promise<ItemDTO> {
-        const cart = await this.collection.findById(id);
-        if (!cart) throw new Error('cart not found');
-        
-        let result: ItemDTO | undefined;
-        cart.items_ref = cart.items_ref.filter(item => {
-            if (item.product_id !== product_id) return true;
-            
-            result = item;
-            return false;
-        });
-
-        if (!result) throw new Error('item not found');
     
-        await cart.save();
+    async delete(id: string): Promise<CartDTO> {
+        const data = await this.collection.findById(id);
+        if (!data) throw new Error("cart not found");
 
-        return result;
+        await data.deleteOne()
+
+        const cart = toModel(data);
+
+        return cart;
     }
 }
 

@@ -4,69 +4,50 @@ import auth from '../middlewares/auth';
 import asyncHandler from '../utils/wrap';
 
 import Controllers from '../../../controllers/index';
-import { ItemDTO } from '../../../models/cart/dao';
 
 const router = Router();
 
 router.get('/', auth('client'), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
     
-    const carts = await Controllers.cart.search({ user_id });
-    if (carts.length > 0) return carts[0];
-
-    return await Controllers.cart.create({ user_id });
+    return await Controllers.cart.get(user_id);
 }));
 
-router.delete('/', auth('client'), asyncHandler(async req => {
+router.post('/clear', auth('client'), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
     
-    const carts = await Controllers.cart.search({ user_id });
-    if (carts.length === 0) throw new Error('cart not found');
+    const cart = await Controllers.cart.get(user_id);
+    await cart.clear();
 
-    const cart = carts[0];
-
-    return await Controllers.cart.clear(cart.id);
+    return cart.json();
 }));
 
 router.post('/products', auth('client'), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
+    const itemDTA: { product_id: string, quantity: number } = req.body;
 
-    const carts = await Controllers.cart.search({ user_id });
-    if (carts.length === 0) throw new Error('cart not found');
-    
-    const cart = carts[0];
+    const cart = await Controllers.cart.get(user_id);
+    await cart.setItem(itemDTA.product_id, itemDTA.quantity)
 
-    const itemDTA: ItemDTO = req.body;
-
-    return await Controllers.cart.setItem(cart.id, itemDTA.product_id, itemDTA.count);
+    return cart.json();
 }));
 
 router.delete('/products/:product_id', auth('client'), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
-    
-    const carts = await Controllers.cart.search({ user_id });
-    if (carts.length === 0) throw new Error('cart not found');
-    
-    const cart = carts[0];
-
     const product_id: string = req.params.product_id;
+    
+    const cart = await Controllers.cart.get(user_id);
+    await cart.setItem(product_id, 0);
 
-    return await Controllers.cart.remItem(cart.id, product_id);
+    return cart.json();
 }));
 
 router.post('/finish', auth('client'), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
 
-    const carts = await Controllers.cart.search({ user_id });
-    if (carts.length === 0) throw new Error('cart not found');
+    const cart = await Controllers.cart.get(user_id);
     
-    const cart = carts[0];
-    
-    const cartFinished = await Controllers.cart.finish(cart.id);
-
-    Controllers.notifier.orderCreated(req.ctx.user, cartFinished); // TODO
-
-    return true;
+    return cart.finish();
 }));
 
 export default router;
