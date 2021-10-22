@@ -43,11 +43,11 @@ router.delete('/products/:product_id', auth('client'), asyncHandler(async req =>
 }));
 
 router.post('/finish', auth('client'), asyncHandler(async req => {
-    const user_id = req.ctx.user.id;
+    const user = req.ctx.user;
 
-    const cart = await Controllers.cart.get(user_id);
+    const cart = await Controllers.cart.get(user.id);
     
-    return cart.finish();
+    return cart.finish(user);
 }));
 
 export default router;

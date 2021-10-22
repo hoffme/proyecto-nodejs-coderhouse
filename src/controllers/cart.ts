@@ -26,12 +26,7 @@ class CartController {
             total: 0
         });
     }
-
-    async finish(id: string) {
-        const cart = await Storage.repositories.cart.find(id);
-        return cart.finish();
-    }
-
+    
     async setItem(id: string, product_id: string, quantity: number): Promise<void> {
         const cart = await Storage.repositories.cart.find(id);
         await cart.setItem(product_id, quantity);

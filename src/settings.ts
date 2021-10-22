@@ -39,6 +39,15 @@ const settings: Settings = {
                 options: {}
             }
         },
+        order: {
+            select: 'file',
+            memory: {},
+            file: { path: './datos/order.json' },
+            mongo: {
+                uri: 'mongodb+srv://hoffme:FeZb13392128@db.jdimd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+                options: {}
+            }
+        }
     },
     controllers: {
         auth: {

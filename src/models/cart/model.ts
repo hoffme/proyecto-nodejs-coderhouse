@@ -1,6 +1,8 @@
 import { EventManager } from "../../utils/events";
+import Order from "../order/model";
 
 import Product from "../product/model";
+import User from "../user/model";
 
 import { AddressDTO, CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from "./dao";
 
@@ -63,7 +65,7 @@ class Cart {
     public get timestamp(): Date { return this._data.timestamp }
     public get items_ref(): ItemDTO[] { return this._data.items_ref }
     public get address(): AddressDTO { return this._data.address }
-    public get cost(): number { return this._data.total }
+    public get total(): number { return this._data.total }
 
     public async items(): Promise<Item[]> {
         const products = await Product.search({ ids: this.items_ref.map(item => item.product_id) });
@@ -110,8 +112,8 @@ class Cart {
         await this.update();
     }
 
-    public async finish(): Promise<void> {
-        
+    public async finish(user: User): Promise<Order> {
+        return await Order.fromCart(user, this);
     }
 
     private async update(): Promise<void> {
