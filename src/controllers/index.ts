@@ -3,6 +3,7 @@ import ProductsController from "./product";
 import CartController from "./cart";
 import UserController from "./user";
 import OrderController from "./order";
+import MessageController from "./message";
 import NotifierController from "./notificator";
 
 import ControllerSettings from "./settings";
@@ -14,6 +15,7 @@ class Controllers {
     static products: ProductsController;
     static cart: CartController;
     static order: OrderController;
+    static message: MessageController;
     static notifier: NotifierController;
 
     static async setup(settings: ControllerSettings) {
@@ -22,6 +24,7 @@ class Controllers {
         Controllers.products = new ProductsController();
         Controllers.cart = new CartController();
         Controllers.order = new OrderController();
+        Controllers.message = new MessageController();
         Controllers.notifier = new NotifierController(settings.notificator);
     }
 }

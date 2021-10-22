@@ -2,18 +2,13 @@ import mongoose, { CallbackError, Schema } from 'mongoose';
 
 import { DAOMongoSettings } from '../../../models/storage/settings';
 
-import { AddressDTO, OrderDAO, OrderDTO, CreateOrderCMD, FilterOrderCMD, ItemDTO, UpdateOrderCMD, OrderState } from '../../../models/order/dao';
+import { AddressDTO, OrderDAO, OrderDTO, CreateOrderCMD, FilterOrderCMD, ItemDTO, UpdateOrderCMD, OrderState, UserDTO } from '../../../models/order/dao';
 
 interface OrderMongoose {
     _id: mongoose.Types.ObjectId
     timestamp: Date
     state: OrderState
-    user: {
-        id: string,
-        name: string
-        email: string
-        phone: string
-    }
+    user: UserDTO
     items: ItemDTO[],
     address: AddressDTO,
     total: number
@@ -46,13 +41,31 @@ class OrderMongooseDAO implements OrderDAO {
         this.collectionName = 'Orders';
 
         this.itemSchema = new Schema<ItemDTO>({
-            product_id: String,
-            count: Number
+            id: String,
+            name: String,
+            unit_price: Number,
+            quantity: Number,
+            total: Number
         });
         this.schema = new Schema<OrderMongoose>({
             timestamp: Date,
             user_id: String,
-            items_ref: [this.itemSchema]
+            items_ref: [this.itemSchema],
+            user: {
+                id: String,
+                name: String,
+                phone: String,
+                email: String
+            },
+            state: String,
+            address: {
+                city: String,
+                zip_code: String,
+                street: String,
+                number: String,
+                indications: String
+            },
+            total: Number
         });
 
         this.collection = mongoose.model(this.collectionName, this.schema);

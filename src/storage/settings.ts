@@ -5,6 +5,7 @@ interface StorageSettings {
     cart: DAOFactorySettings
     user: DAOFactorySettings
     order: DAOFactorySettings
+    message: DAOFactorySettings
 }
 
 export default StorageSettings;

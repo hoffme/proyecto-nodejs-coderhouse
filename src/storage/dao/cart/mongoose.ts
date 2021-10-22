@@ -40,12 +40,21 @@ class CartMongooseDAO implements CartDAO {
 
         this.itemSchema = new Schema<ItemDTO>({
             product_id: String,
-            count: Number
+            quantity: Number,
+            total: Number
         });
         this.schema = new Schema<CartMongoose>({
             timestamp: Date,
             user_id: String,
-            items_ref: [this.itemSchema]
+            items_ref: [this.itemSchema],
+            address: {
+                city: String,
+                zip_code: String,
+                street: String,
+                number: String,
+                indications: String
+            },
+            total: Number
         });
 
         this.collection = mongoose.model(this.collectionName, this.schema);
