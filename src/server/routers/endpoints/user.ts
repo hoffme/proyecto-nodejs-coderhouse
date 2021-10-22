@@ -9,12 +9,12 @@ import { UpdateUserCMD } from '../../../models/user/model';
 
 const router = Router();
 
-router.get('/', auth('client'), asyncHandler(async req => {
+router.get('/', auth(), asyncHandler(async req => {
     const user = req.ctx.user;
     return user.json();
 }))
 
-router.put('/', auth('client'), asyncHandler(async req => {
+router.put('/', auth(), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
     const fields: UpdateUserCMD = req.body;
 

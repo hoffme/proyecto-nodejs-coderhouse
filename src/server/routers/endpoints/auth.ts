@@ -5,6 +5,8 @@ import { SignInParams, SignUpParams } from '../../../controllers/auth';
 
 import asyncHandler from '../utils/wrap';
 
+import auth from '../middlewares/auth';
+
 const router = Router();
 
 router.post('/signin', asyncHandler(async (req) => {    
@@ -32,7 +34,7 @@ router.post('/signup', asyncHandler(async (req) => {
     return token;
 }))
 
-router.post('/logout', asyncHandler(async (req) => {
+router.post('/logout', auth(), asyncHandler(async (req) => {
     await Controllers.auth.logout(req.ctx.token);
     
     req.session.destroy(() => {});

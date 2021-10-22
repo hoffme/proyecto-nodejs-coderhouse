@@ -4,7 +4,7 @@ import { UserType } from '../../../models/user/model';
 
 import errorResponse from '../utils/error';
 
-const auth = (type: UserType): RequestHandler => {
+const auth = (type?: UserType): RequestHandler => {
     return (req, res, next) => {
         if (req.ctx.isAuthenticated(type)) return next();
 
