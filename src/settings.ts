@@ -82,9 +82,10 @@ const settings: Settings = {
     },
     server: {
         port: process.env.PORT || '5000',
-        router: {
+        rest: {
             session_secret: 'SESSION SECRET'
-        }
+        },
+        realtime: {}
     }
 }
 

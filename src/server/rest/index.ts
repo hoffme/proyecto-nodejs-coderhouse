@@ -17,7 +17,7 @@ import UserRouter from './endpoints/user';
 import ProductRouter from './endpoints/product';
 import CartRouter from './endpoints/cart';
 
-import Settings from './settings';
+import RestSettings from './settings';
 import successResponse from './utils/success';
 
 declare global {
@@ -34,7 +34,7 @@ declare module 'express-session' {
     }
 }
 
-const createRouter = async (settings: Settings) => {
+const createRouter = async (settings: RestSettings) => {
     const app = express();
 
     app.use(cors());

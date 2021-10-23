@@ -1,8 +1,10 @@
-import Settings from "./routers/settings";
+import RealtimeSettings from "./realtime/settings";
+import RestSettings from "./rest/settings";
 
 interface ServerSettings {
     port: string
-    router: Settings
+    rest: RestSettings
+    realtime: RealtimeSettings
 }
 
 export default ServerSettings;

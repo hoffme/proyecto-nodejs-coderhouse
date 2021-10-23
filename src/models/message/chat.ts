@@ -12,22 +12,21 @@ interface FilterMessage {
 
 class Chat {
 
-    private static readonly events = {
+    private readonly events = {
         message: new EventManager<Message>(),
     }
-
-    public static get on() {
-        return {
-            message: this.events.message.register
-        }
-    }
-
     private readonly filter: FilterMessage;
     private started: boolean
 
     constructor(filter: FilterMessage) {
         this.filter = filter;
         this.started = false;
+    }
+
+    public get on() {
+        return {
+            message: this.events.message.register
+        }
     }
 
     public start() {
@@ -49,7 +48,7 @@ class Chat {
         if (this.filter.user_id && this.filter.user_id !== message.user.id) return;
         if (this.filter.chat_id && this.filter.chat_id !== message.chat_id) return;
 
-        Chat.events.message.notify(message);
+        this.events.message.notify(message);
     }
 
 }

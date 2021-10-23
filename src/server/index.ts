@@ -1,5 +1,7 @@
 import { Server as HTTPServer } from 'http';
-import createRouter from './routers';
+import realtimeRouter from './realtime';
+
+import restRouter from './rest';
 
 import ServerSettings from './settings';
 
@@ -16,8 +18,11 @@ class Server {
     }
 
     private static async httpServer(): Promise<void> {
-        const router = await createRouter(this.settings.router);
+        const router = await restRouter(this.settings.rest);
+
         this.server = new HTTPServer(router);
+
+        await realtimeRouter(this.server, this.settings.realtime);
     }
 
     static start() {
