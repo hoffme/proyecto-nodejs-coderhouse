@@ -1,6 +1,6 @@
 import { DAOFileSettings } from '../../../models/storage/settings';
 
-import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
+import { CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, UpdateCartCMD } from '../../../models/cart';
 
 import FileStorage from '../../../utils/file';
 import uuid from '../../../utils/uuid';

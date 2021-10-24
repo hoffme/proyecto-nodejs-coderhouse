@@ -6,7 +6,7 @@ import {
 
 import DAOFactory from "../../models/storage/factory";
 
-import { MessageDAO } from "../../models/message/dao";
+import { MessageDAO } from "../../models/message";
 
 import MessageFileDAO from "../dao/message/file";
 import MessageMemoryDAO from "../dao/message/memory";

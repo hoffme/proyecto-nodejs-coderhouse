@@ -1,8 +1,8 @@
 import nodemailer, { Transporter } from 'nodemailer';
 import twilio, { Twilio } from 'twilio';
 
-import Cart from '../models/cart/model';
-import User from '../models/user/model';
+import { Cart } from '../../models/cart';
+import { User } from '../../models/user';
 
 interface NotifierSettings {
     senders: {

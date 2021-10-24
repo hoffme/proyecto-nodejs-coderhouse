@@ -1,18 +1,14 @@
-import Storage from '../storage';
-
-import { FilterMessageCMD } from '../models/message/dao';
-
-import Message from '../models/message/model';
-import User from '../models/user/model';
+import { Message, FilterMessageCMD } from '../../models/message';
+import { User } from '../../models/user';
 
 class MessageController {
 
     async search(filter: FilterMessageCMD): Promise<Message[]> {
-        return await Storage.repositories.message.search(filter);
+        return await Message.search(filter);
     }
 
     async get(id: string): Promise<Message> {
-        return await Storage.repositories.message.find(id);        
+        return await Message.getById(id);        
     }
 
     async createClient(user: User, body: string): Promise<Message> {

@@ -1,10 +1,9 @@
 import { Router } from 'express';
 
-import Controllers from '../../../controllers/index';
 import { SignInParams, SignUpParams } from '../../../controllers/auth';
+import Controllers from '../../../controllers';
 
 import asyncHandler from '../utils/wrap';
-
 import auth from '../middlewares/auth';
 
 const router = Router();

@@ -6,7 +6,7 @@ import {
 
 import DAOFactory from "../../models/storage/factory";
 
-import { OrderDAO } from "../../models/order/dao";
+import { OrderDAO } from "../../models/order";
 
 import OrderFileDAO from "../dao/order/file";
 import OrderMemoryDAO from "../dao/order/memory";

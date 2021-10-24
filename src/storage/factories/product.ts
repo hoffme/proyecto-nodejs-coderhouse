@@ -6,7 +6,7 @@ import {
 
 import DAOFactory from "../../models/storage/factory";
 
-import { ProductDAO } from "../../models/product/dao";
+import { ProductDAO } from "../../models/product";
 
 import ProductFileDAO from "../dao/product/file";
 import ProductMemoryRepository from "../dao/product/memory";

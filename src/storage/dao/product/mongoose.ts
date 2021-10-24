@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 import { DAOMongoSettings } from '../../../models/storage/settings';
 
-import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../models/product/dao';
+import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../models/product';
 
 interface ProductMongoose {
     _id: mongoose.Types.ObjectId

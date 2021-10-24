@@ -1,11 +1,11 @@
 import { Router } from 'express';
 
-import auth from '../middlewares/auth';
-import asyncHandler from '../utils/wrap';
+import { UpdateUser } from '../../../models/user';
 
 import Controllers from '../../../controllers';
 
-import { UpdateUserCMD } from '../../../models/user/model';
+import auth from '../middlewares/auth';
+import asyncHandler from '../utils/wrap';
 
 const router = Router();
 
@@ -16,7 +16,7 @@ router.get('/', auth(), asyncHandler(async req => {
 
 router.put('/', auth(), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
-    const fields: UpdateUserCMD = req.body;
+    const fields: UpdateUser = req.body;
 
     const update = await Controllers.user.update(user_id, fields);
 

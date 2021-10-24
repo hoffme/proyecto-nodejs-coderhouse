@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 
-import Chat, { FilterMessage } from "../../../models/message/chat";
+import { Chat, FilterMessage } from "../../../models/message";
 
 class MessageEvents {
 

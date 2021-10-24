@@ -1,6 +1,6 @@
 import { DAOFileSettings } from '../../../models/storage/settings';
 
-import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
+import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user';
 
 import FileStorage from '../../../utils/file';
 import uuid from '../../../utils/uuid';

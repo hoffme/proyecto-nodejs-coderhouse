@@ -1,6 +1,6 @@
 import { DAOMemorySettings } from '../../../models/storage/settings';
 
-import { MessageDAO, MessageDTO, CreateMessageCMD, FilterMessageCMD } from '../../../models/message/dao';
+import { MessageDAO, MessageDTO, CreateMessageCMD, FilterMessageCMD } from '../../../models/message';
 
 import uuid from "../../../utils/uuid";
 

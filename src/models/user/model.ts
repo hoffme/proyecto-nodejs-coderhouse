@@ -120,7 +120,6 @@ class User {
 export default User;
 export type {
     UserType,
-    CreateUser as CreateUserCMD,
-    UpdateUser as UpdateUserCMD,
-    FilterUserCMD
+    CreateUser,
+    UpdateUser
 }

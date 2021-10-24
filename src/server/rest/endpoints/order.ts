@@ -1,12 +1,11 @@
 import { Router } from 'express';
 
-import auth from '../middlewares/auth';
-import asyncHandler from '../utils/wrap';
+import { Order, OrderState } from '../../../models/order';
 
 import Controllers from '../../../controllers/index';
 
-import Order from '../../../models/order/model';
-import { OrderState } from '../../../models/order/dao';
+import auth from '../middlewares/auth';
+import asyncHandler from '../utils/wrap';
 
 const router = Router();
 

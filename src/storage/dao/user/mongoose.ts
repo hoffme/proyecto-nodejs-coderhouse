@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 
 import { DAOMongoSettings } from '../../../models/storage/settings';
 
-import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user/dao';
+import { CreateUserCMD, FilterUserCMD, UpdateUserCMD, UserDAO, UserDTO } from '../../../models/user';
 
 interface UserMongoose {
     _id: mongoose.Types.ObjectId

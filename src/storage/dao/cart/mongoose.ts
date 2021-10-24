@@ -2,7 +2,7 @@ import mongoose, { CallbackError, Schema } from 'mongoose';
 
 import { DAOMongoSettings } from '../../../models/storage/settings';
 
-import { AddressDTO, CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart/dao';
+import { AddressDTO, CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from '../../../models/cart';
 
 interface CartMongoose {
     _id: mongoose.Types.ObjectId

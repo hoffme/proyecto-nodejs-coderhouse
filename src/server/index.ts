@@ -1,6 +1,6 @@
 import { Server as HTTPServer } from 'http';
-import realtimeRouter from './realtime';
 
+import realtimeRouter from './realtime';
 import restRouter from './rest';
 
 import ServerSettings from './settings';

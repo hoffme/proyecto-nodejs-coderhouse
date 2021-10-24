@@ -1,8 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-import Storage from '../storage';
-
-import User, { CreateUserCMD } from '../models/user/model';
+import { User, CreateUser } from '../../models/user';
 
 interface UserToken {
     access: string
@@ -18,7 +16,7 @@ interface SignInParams {
     password: string
 }
 
-interface SignUpParams extends CreateUserCMD {};
+interface SignUpParams extends CreateUser {};
 
 interface AuthSettings {
     jwt_secret: string
@@ -33,7 +31,7 @@ class AuthController {
     }
 
     public async signin(params: SignInParams): Promise<UserToken> {
-        const user = await Storage.repositories.user.find({ email: params.email });
+        const user = await User.search({ email: params.email });
         if (!user) throw new Error('email not register');
 
         if (!user.validPassword(params.password)) {
@@ -49,16 +47,16 @@ class AuthController {
     }
 
     public async signup(params: SignUpParams): Promise<void> {
-        let user = await Storage.repositories.user.find({ email: params.email });
+        let user = await User.search({ email: params.email });
         if (user) throw new Error('email alrady register');
     
-        await Storage.repositories.user.create(params);
+        await User.create(params);
     }
     
     public async getUser(token: UserToken): Promise<User> {
         const fields = await this.decodeToken(token);
         
-        return Storage.repositories.user.find({ id: fields.id });
+        return User.search({ id: fields.id });
     }
 
     public async logout(token: UserToken): Promise<void> {}

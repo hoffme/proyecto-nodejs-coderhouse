@@ -2,7 +2,7 @@ import mongoose, { CallbackError, Schema } from 'mongoose';
 
 import { DAOMongoSettings } from '../../../models/storage/settings';
 
-import { AddressDTO, OrderDAO, OrderDTO, CreateOrderCMD, FilterOrderCMD, ItemDTO, UpdateOrderCMD, OrderState, UserDTO } from '../../../models/order/dao';
+import { AddressDTO, OrderDAO, OrderDTO, CreateOrderCMD, FilterOrderCMD, ItemDTO, UpdateOrderCMD, OrderState, UserDTO } from '../../../models/order';
 
 interface OrderMongoose {
     _id: mongoose.Types.ObjectId

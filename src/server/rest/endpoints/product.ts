@@ -1,10 +1,11 @@
 import { Router } from 'express';
 
-import auth from '../middlewares/auth';
-import asyncHandler from '../utils/wrap';
+import { CreateProductCMD, FilterProductCMD, UpdateProductCMD } from '../../../models/product';
 
 import Controllers from '../../../controllers';
-import { CreateProductCMD, FilterProductCMD, UpdateProductCMD } from '../../../models/product/model';
+
+import auth from '../middlewares/auth';
+import asyncHandler from '../utils/wrap';
 
 const router = Router();
 

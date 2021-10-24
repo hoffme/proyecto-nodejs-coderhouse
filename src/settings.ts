@@ -1,10 +1,12 @@
 import ControllerSettings from "./controllers/settings";
+import ModelsSettings from "./models/settings";
 import ServerSettings from "./server/settings";
 import StorageSettings from "./storage/settings";
 
 interface Settings {
     cluster: boolean
     storage: StorageSettings
+    models: ModelsSettings
     controllers: ControllerSettings
     server: ServerSettings
 }
@@ -58,6 +60,7 @@ const settings: Settings = {
             }
         }
     },
+    models: {},
     controllers: {
         auth: {
             jwt_secret: 'shhhhhh'

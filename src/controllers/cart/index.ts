@@ -1,19 +1,16 @@
-import Storage from '../storage';
-
-import Cart, { FilterCartCMD } from '../models/cart/model';
-import { AddressDTO } from '../models/cart/dao';
+import { Cart, FilterCartCMD, AddressDTO } from '../../models/cart';
 
 class CartController {
 
     async search(filter: FilterCartCMD): Promise<Cart[]> {
-        return await Storage.repositories.cart.search(filter);
+        return await Cart.search(filter);
     }
 
     async get(user_id: string): Promise<Cart> {
-        const carts = await Storage.repositories.cart.search({ user_id });
+        const carts = await Cart.search({ user_id });
         if (carts.length > 0) return carts[0];
 
-        return await Storage.repositories.cart.create({
+        return await Cart.create({
             user_id,
             items_ref: [],
             address: {
@@ -28,17 +25,17 @@ class CartController {
     }
     
     async setItem(id: string, product_id: string, quantity: number): Promise<void> {
-        const cart = await Storage.repositories.cart.find(id);
+        const cart = await Cart.getById(id);
         await cart.setItem(product_id, quantity);
     }
 
     async setAddress(id: string, address: AddressDTO): Promise<void> {
-        const cart = await Storage.repositories.cart.find(id);
+        const cart = await Cart.getById(id);
         await cart.setAddress(address);
     }
 
     async clear(id: string): Promise<void> {
-        const cart = await Storage.repositories.cart.find(id);
+        const cart = await Cart.getById(id);
         await cart.clear();
     }
 

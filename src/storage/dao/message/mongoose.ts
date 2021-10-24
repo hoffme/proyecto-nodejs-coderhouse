@@ -2,7 +2,7 @@ import mongoose, { CallbackError, Schema } from 'mongoose';
 
 import { DAOMongoSettings } from '../../../models/storage/settings';
 
-import { MessageDAO, MessageDTO, CreateMessageCMD, FilterMessageCMD, UserDTO, MessageBy } from '../../../models/message/dao';
+import { MessageDAO, MessageDTO, CreateMessageCMD, FilterMessageCMD, UserDTO, MessageBy } from '../../../models/message';
 
 interface MessageMongoose {
     _id: mongoose.Types.ObjectId

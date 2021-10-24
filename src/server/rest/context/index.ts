@@ -1,9 +1,9 @@
 import { Request } from "express";
-import Controllers from "../../../controllers";
+
+import { User, UserType } from "../../../models/user";
 
 import { UserToken } from "../../../controllers/auth";
-
-import User, { UserType } from "../../../models/user/model";
+import Controllers from "../../../controllers";
 
 interface UserData {
     token: UserToken

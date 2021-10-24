@@ -1,6 +1,6 @@
 import { DAOFileSettings } from '../../../models/storage/settings';
 
-import { OrderDAO, OrderDTO, CreateOrderCMD, FilterOrderCMD, UpdateOrderCMD } from '../../../models/order/dao';
+import { OrderDAO, OrderDTO, CreateOrderCMD, FilterOrderCMD, UpdateOrderCMD } from '../../../models/order';
 
 import FileStorage from '../../../utils/file';
 import uuid from '../../../utils/uuid';

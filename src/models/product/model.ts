@@ -78,8 +78,3 @@ class Product {
 }
 
 export default Product;
-export type {
-    CreateProductCMD,
-    FilterProductCMD,
-    UpdateProductCMD
-}

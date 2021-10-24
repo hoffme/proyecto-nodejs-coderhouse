@@ -1,6 +1,6 @@
 import { DAOMemorySettings } from '../../../models/storage/settings';
 
-import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../models/product/dao';
+import { CreateProductCMD, FilterProductCMD, ProductDAO, ProductDTO, UpdateProductCMD } from '../../../models/product';
 
 import uuid from "../../../utils/uuid";
 

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 
-import { UserType } from '../../../models/user/model';
+import { UserType } from '../../../models/user';
 
 import errorResponse from '../utils/error';
 

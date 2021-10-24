@@ -1,8 +1,8 @@
 import { EventManager } from "../../utils/events";
-import Order from "../order/model";
 
-import Product from "../product/model";
-import User from "../user/model";
+import { Order } from "../order";
+import { Product } from "../product";
+import { User } from "../user";
 
 import { AddressDTO, CartDAO, CartDTO, CreateCartCMD, FilterCartCMD, ItemDTO, UpdateCartCMD } from "./dao";
 
@@ -131,10 +131,4 @@ class Cart {
 }
 
 export default Cart;
-export type {
-    Item,
-    CreateCartCMD,
-    UpdateCartCMD,
-    FilterCartCMD,
-    ItemDTO
-}
+export type { Item };

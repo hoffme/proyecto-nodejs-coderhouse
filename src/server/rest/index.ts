@@ -1,7 +1,7 @@
 import express from 'express';
 import { urlencoded, json } from 'body-parser';
 import cookieParser from 'cookie-parser';
-import session, { Session, SessionData } from 'express-session';
+import session from 'express-session';
 import cors from 'cors';
 
 import { UserToken } from '../../controllers/auth';
@@ -12,13 +12,14 @@ import CTXMiddleware from './context/middleware';
 import ErrorsMiddleware from './middlewares/error';
 import LoggerMiddleware from './middlewares/logger';
 
+import successResponse from './utils/success';
+
 import AuthRouter from './endpoints/auth';
 import UserRouter from './endpoints/user';
 import ProductRouter from './endpoints/product';
 import CartRouter from './endpoints/cart';
 
 import RestSettings from './settings';
-import successResponse from './utils/success';
 
 declare global {
     namespace Express {
