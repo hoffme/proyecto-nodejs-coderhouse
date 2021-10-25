@@ -38,11 +38,18 @@ class Notificator {
                 )
             })
             Order.on.create.listen(async (order) => {
-                await Notificator.sendMail(
-                    Notificator.settings.reciver.admin_mail!,
-                    'Nueva Orden',
-                    JSON.stringify(order.json())
-                )
+                await Promise.all([
+                    Notificator.sendMail(
+                        Notificator.settings.reciver.admin_mail!,
+                        'Nueva Orden',
+                        JSON.stringify(order.json())
+                    ),
+                    Notificator.sendMail(
+                        order.user.email,
+                        'Orden Generada',
+                        JSON.stringify(order.json())
+                    )
+                ])
             })
         }
 
