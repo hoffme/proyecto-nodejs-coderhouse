@@ -1,16 +1,21 @@
 import { Message, FilterMessageCMD } from '../../models/message';
 import { User } from '../../models/user';
 
-class MessageController {
+import Controller from '../controller';
 
+class MessageController extends Controller {
+
+    @Controller.method()
     async search(filter: FilterMessageCMD): Promise<Message[]> {
         return await Message.search(filter);
     }
 
+    @Controller.method()
     async get(id: string): Promise<Message> {
         return await Message.getById(id);        
     }
 
+    @Controller.method()
     async createClient(user: User, body: string): Promise<Message> {
         return await Message.create({
             chat_id: user.id,
@@ -25,6 +30,7 @@ class MessageController {
         })
     }
 
+    @Controller.method()
     async createSeller(user: User, chat_id: string, body: string): Promise<Message> {
         return await Message.create({
             chat_id,
@@ -38,7 +44,6 @@ class MessageController {
             body
         })
     }
-
 }
 
 export default MessageController;

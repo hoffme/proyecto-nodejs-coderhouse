@@ -6,24 +6,22 @@
   "module": "module",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node .",
+    "start": "npm run build && node ./dist/index.js",
     "dev": "nodemon src/index.ts"
   },
   "keywords": [],
   "author": "Juan Ignacio Coronel",
   "license": "ISC",
   "devDependencies": {
-    "@types/jsonwebtoken": "^8.5.5",
     "@types/bcrypt": "^5.0.0",
     "@types/body-parser": "^1.19.1",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.12",
     "@types/express-session": "^1.17.4",
-    "@types/multer": "^1.4.7",
+    "@types/jsonwebtoken": "^8.5.5",
     "@types/node": "^15.12.5",
     "@types/nodemailer": "^6.4.4",
-    "@types/twilio": "^3.19.3",
     "nodemon": "^2.0.13",
     "ts-node": "^10.3.0",
     "typescript": "^4.3.4"
@@ -39,7 +37,6 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.3",
     "nodemailer": "^6.6.3",
-    "socket.io": "^4.3.1",
-    "twilio": "^3.67.2"
+    "socket.io": "^4.3.1"
   }
 }

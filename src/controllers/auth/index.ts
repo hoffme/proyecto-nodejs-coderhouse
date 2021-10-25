@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 
 import { User, CreateUser } from '../../models/user';
 
+import Controller from '../controller';
+
 interface UserToken {
     access: string
 }
@@ -22,14 +24,17 @@ interface AuthSettings {
     jwt_secret: string
 }
 
-class AuthController {
+class AuthController extends Controller {
 
     private readonly settings: AuthSettings;
 
     constructor(settings: AuthSettings) {
+        super();
+
         this.settings = settings;
     }
 
+    @Controller.method()
     public async signin(params: SignInParams): Promise<UserToken> {
         const user = await User.search({ email: params.email });
         if (!user) throw new Error('email not register');
@@ -46,6 +51,7 @@ class AuthController {
         return token;
     }
 
+    @Controller.method()
     public async signup(params: SignUpParams): Promise<void> {
         let user = await User.search({ email: params.email });
         if (user) throw new Error('email alrady register');
@@ -53,14 +59,17 @@ class AuthController {
         await User.create(params);
     }
     
+    @Controller.method()
     public async getUser(token: UserToken): Promise<User> {
         const fields = await this.decodeToken(token);
         
         return User.search({ id: fields.id });
     }
 
+    @Controller.method()
     public async logout(token: UserToken): Promise<void> {}
 
+    @Controller.method()
     public async verifyToken(token: UserToken): Promise<boolean> {
         jwt.verify(token.access, this.settings.jwt_secret);
         return true;

@@ -4,6 +4,8 @@ import { Cart } from "./cart";
 import { Order } from "./order";
 import { Message } from "./message";
 
+import Notificator from "./notificator";
+
 import Storage from "../storage";
 
 import ModelsSettings from "./settings";
@@ -16,6 +18,8 @@ class Models {
         Cart.setDAO(await Storage.factories.cart.instance());
         Order.setDAO(await Storage.factories.order.instance());
         Message.setDAO(await Storage.factories.message.instance());
+
+        await Notificator.setup(settings.notificator);
     }
 }
 
