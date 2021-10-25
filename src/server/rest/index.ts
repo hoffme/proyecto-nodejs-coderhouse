@@ -18,6 +18,9 @@ import AuthRouter from './endpoints/auth';
 import UserRouter from './endpoints/user';
 import ProductRouter from './endpoints/product';
 import CartRouter from './endpoints/cart';
+import MessageRouter from './endpoints/message';
+import OrderRouter from './endpoints/order';
+import SettingsRouter from './endpoints/settings';
 
 import RestSettings from './settings';
 
@@ -60,6 +63,9 @@ const createRouter = async (settings: RestSettings) => {
     app.use('/user', UserRouter);
     app.use('/product', ProductRouter);
     app.use('/cart', CartRouter);
+    app.use('/chat', MessageRouter);
+    app.use('/order', OrderRouter);
+    app.use('/settings', SettingsRouter);
 
     app.use(ErrorsMiddleware);
 
