@@ -9,8 +9,6 @@ const CTXMiddleware: RequestHandler = (req, res, next) => {
             next();
         })
         .catch((err) => {
-            console.error('error on build request context', err);
-            
             next(new Error('Internal Error'))
         })    
 }
