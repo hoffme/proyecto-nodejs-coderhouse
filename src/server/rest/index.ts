@@ -50,8 +50,8 @@ const createRouter = async (settings: RestSettings) => {
     app.use(cookieParser(settings.session_secret));
     app.use(session({
         secret: settings.session_secret,
-        resave: true,
-        saveUninitialized: true,
+        resave: false,
+        saveUninitialized: false,
     }));
 
     app.use(CTXMiddleware);

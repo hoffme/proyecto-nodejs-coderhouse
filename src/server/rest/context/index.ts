@@ -17,10 +17,13 @@ class Context {
     public static async build(req: Request): Promise<Context> {
         let data: UserData | undefined;
 
-        const token = req.session.token;
-        if (token) {
-            const user = await Controllers.auth.getUser(token);
+        const access = req.headers.authorization?.split(" ")[1];
+        if (access) {
+            const token: UserToken = { access };
 
+            req.session.token = token;
+            const user = await Controllers.auth.getUser(token);
+            
             data = { token, user };
         }
 

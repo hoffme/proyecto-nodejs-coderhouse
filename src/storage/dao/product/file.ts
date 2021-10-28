@@ -32,7 +32,7 @@ class ProductFileDAO implements ProductDAO {
 
         return Object.values(items).filter(item => {
             if (filter.ids && !filter.ids.includes(item.id)) return false;
-            if (filter.name && item.name !== filter.name) return false;
+            if (filter.name && !item.name.toLocaleLowerCase().includes(filter.name.toLocaleLowerCase())) return false;
             if (filter.code && item.code !== filter.code) return false;
             if (filter.price_min && item.price < filter.price_min) return false;
             if (filter.price_max && item.price > filter.price_max) return false;
