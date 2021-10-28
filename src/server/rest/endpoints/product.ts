@@ -11,32 +11,41 @@ const router = Router();
 
 router.get('/:id', asyncHandler(async req => {
     const id = req.params.id;
-    return await Controllers.products.find(id);
+    const result = await Controllers.products.find(id);
+    return result.json();
 }));
 
 router.post('/search', asyncHandler(async req => {
     const filter: FilterProductCMD = req.body;
 
-    return Controllers.products.search(filter);
+    const result = await Controllers.products.search(filter);
+
+    return result.map(product => product.json());
 }));
 
 router.post('/', auth("admin"), asyncHandler(async req => {
     const cmd: CreateProductCMD = req.body;
     
-    return await Controllers.products.create(cmd);
+    const result = await Controllers.products.create(cmd);
+
+    return result.json();
 }));
 
 router.put('/:id', auth("admin"), asyncHandler(async req => {
     const id: string = req.params.id; 
     const cmd: UpdateProductCMD = req.body;
 
-    return await Controllers.products.update(id, cmd);
+    const result = await Controllers.products.update(id, cmd);
+
+    return result.json();
 }));
 
 router.delete('/:id', auth("admin"), asyncHandler(async req => {
     const id: string = req.params.id;
 
-    return await Controllers.products.delete(id);
+    const result = await Controllers.products.delete(id);
+
+    return result.json();
 }));
 
 export default router;

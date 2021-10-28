@@ -75,6 +75,19 @@ class Product {
         Product.events.delete.notify(this);
     }
 
+    public json() {
+        return {
+            id: this.id,
+            timestamp: this.timestamp,
+            name: this.name,
+            description: this.description,
+            code: this.code,
+            picture: this.picture,
+            price: this.price,
+            stock: this.stock
+        }
+    }
+
 }
 
 export default Product;

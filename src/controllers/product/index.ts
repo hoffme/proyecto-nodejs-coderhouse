@@ -4,33 +4,38 @@ import Controller from "../controller";
 
 class ProductsController extends Controller {
 
-    @Controller.method()
     async search(filter: FilterProductCMD): Promise<Product[]> {
-        return await Product.search(filter);
+        return Controller.secureMethod(async () => {
+            return await Product.search(filter);
+        });
     }
 
-    @Controller.method()
     async find(id: string): Promise<Product> {
-        return await Product.getById(id) 
+        return Controller.secureMethod(async () => {        
+            return await Product.getById(id) 
+        });
     }
 
-    @Controller.method()
     async create(cmd: CreateProductCMD): Promise<Product> {
-        return await Product.create(cmd); 
+        return Controller.secureMethod(async () => {
+            return await Product.create(cmd); 
+        });
     }
 
-    @Controller.method()
     async update(id: string, cmd: UpdateProductCMD): Promise<Product> {
-        const product = await Product.getById(id);
-        await product.update(cmd);
-        return product; 
+        return Controller.secureMethod(async () => {
+            const product = await Product.getById(id);
+            await product.update(cmd);
+            return product; 
+        });
     }
 
-    @Controller.method()
     async delete(id: string): Promise<Product> {
-        const product = await Product.getById(id);
-        await product.delete();
-        return product;
+        return Controller.secureMethod(async () => {
+            const product = await Product.getById(id);
+            await product.delete();
+            return product;
+        });
     }
 }
 
