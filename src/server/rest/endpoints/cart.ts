@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import Controllers from '../../../controllers';
+import { AddressDTO } from '../../../models/order';
 
 import auth from '../middlewares/auth';
 import asyncHandler from '../utils/wrap';
@@ -10,7 +11,7 @@ const router = Router();
 router.get('/', auth('client'), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
     
-    return await Controllers.cart.get(user_id);
+    return (await Controllers.cart.get(user_id)).json();
 }));
 
 router.post('/clear', auth('client'), asyncHandler(async req => {
@@ -18,6 +19,16 @@ router.post('/clear', auth('client'), asyncHandler(async req => {
     
     const cart = await Controllers.cart.get(user_id);
     await cart.clear();
+
+    return cart.json();
+}));
+
+router.post('/address', auth('client'), asyncHandler(async req => {
+    const user_id = req.ctx.user.id;
+    const address: AddressDTO = req.body;
+    
+    const cart = await Controllers.cart.get(user_id);
+    await cart.setAddress(address);
 
     return cart.json();
 }));
@@ -47,7 +58,7 @@ router.post('/finish', auth('client'), asyncHandler(async req => {
 
     const cart = await Controllers.cart.get(user.id);
     
-    return cart.finish(user);
+    return (await cart.finish(user)).json();
 }));
 
 export default router;

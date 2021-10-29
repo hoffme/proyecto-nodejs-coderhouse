@@ -69,7 +69,7 @@ class AuthController extends Controller {
                 throw new Error('email alrady register');
             } catch (e) {}
         
-            await User.create(params);
+            await User.create({ ...params, type: 'client' });
         });
     }
     

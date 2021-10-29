@@ -87,17 +87,19 @@ class Cart {
         const product = await Product.getById(product_id);
         const total = product.price * quantity;
 
-        const item: ItemDTO = { product_id, quantity, total };
+        const newItem: ItemDTO = { product_id, quantity, total };
 
         let added = false;
         this._data.items_ref = this._data.items_ref.map(item => {
-            if (item.product_id !== item.product_id) return item;
+            if (item.product_id !== newItem.product_id) return item;
             
             added = true;
-            return item;
+            return newItem;
         })
 
-        if (!added) this._data.items_ref.push(item);
+        if (!added) this._data.items_ref.push(newItem);
+
+        this._data.items_ref = this._data.items_ref.filter(item => item.quantity > 0);
 
         this._data.total = this._data.items_ref.reduce((total, item) => total + item.total, 0);
 
@@ -113,7 +115,11 @@ class Cart {
     }
 
     public async finish(user: User): Promise<Order> {
-        return await Order.fromCart(user, this);
+        const order = await Order.fromCart(user, this);
+        
+        await this.clear();
+
+        return order;    
     }
 
     private async update(): Promise<void> {
