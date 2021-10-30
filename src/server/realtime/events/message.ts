@@ -1,39 +1,60 @@
 import { Socket } from "socket.io";
 
-import { Chat, FilterMessage } from "../../../models/message";
+import { Message, MessageBy } from "../../../models/message";
+import { User } from "../../../models/user";
+
+interface FilterMessage {
+    by?: MessageBy
+    chat_id?: string
+}
+
+interface FollowData {
+    user: User
+    socket: Socket
+    filter: FilterMessage
+}
 
 class MessageEvents {
 
-    private readonly chats = new Map<String, Chat[]>();
+    private readonly followers = new Map<string, FollowData>();
 
-    public init(socket: Socket) {
-        socket.on("/message/register", (filter: FilterMessage) => {
-            const user = socket.handshake.auth.user;
+    constructor() {
+        Message.on.create.listen(message => {
+            Array.from(this.followers.values()).forEach(subs => {
+                if (subs.user.type === 'client' && subs.user.id !== message.chat_id) return;
 
-            const chat = new Chat({ ...filter, user_id: user.id });
+                if (subs.filter.by && subs.filter.by !== message.by) return;
+                if (subs.filter.chat_id && subs.filter.chat_id !== message.chat_id) return;
 
-            chat.on.message.listen(message => {
-                socket.emit("/message/new", filter, message.json());
+                console.log(message);
+
+                subs.socket.emit('/message/new', message.json());
             });
-
-            chat.start();
-
-            if (this.chats.has(socket.id)) {
-                this.chats.get(socket.id)?.push(chat);
-            }
-            else {
-                this.chats.set(socket.id, [chat]);
-            }
         })
     }
 
-    public close(socket: Socket) {
-        const chats = this.chats.get(socket.id);
-        if (!chats) return;
+    public init(socket: Socket) {        
+        socket.on("/message/follow", (filter: FilterMessage) => {
+            console.log('registrando', filter);
 
-        chats.forEach(chat => chat.close());
+            const user: User = socket.handshake.auth.user;
 
-        this.chats.delete(socket.id);
+            this.followers.set(socket.id, {
+                user,
+                socket,
+                filter
+            })
+        })
+
+        socket.on("/message/unfollow", () => {
+            console.log('removiendo');
+            this.followers.delete(socket.id)
+        })
+
+        socket.on("disconnect", () => {
+            console.log('removiendo');
+            this.followers.delete(socket.id);
+        })
     }
 
 }

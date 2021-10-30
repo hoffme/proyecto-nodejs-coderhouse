@@ -11,10 +11,6 @@ class RealtimeManager {
     }
 
     public newConnection(socket: Socket) {
-        socket.on("disconnect", () => {
-            this.messages.close(socket);
-        })
-
         this.messages.init(socket);
     }
 
