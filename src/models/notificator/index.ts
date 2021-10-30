@@ -1,4 +1,5 @@
 import nodemailer, { Transporter } from 'nodemailer';
+import ejs from 'ejs';
 
 import ErrorManager from '../error';
 import { Order } from '../order';
@@ -34,7 +35,8 @@ class Notificator {
                 await Notificator.sendMail(
                     Notificator.settings.reciver.admin_mail!,
                     'Nuevo Usuario Registrado',
-                    JSON.stringify(user.json())
+                    'register',
+                    user.json()
                 )
             })
             Order.on.create.listen(async (order) => {
@@ -42,12 +44,14 @@ class Notificator {
                     Notificator.sendMail(
                         Notificator.settings.reciver.admin_mail!,
                         'Nueva Orden',
-                        JSON.stringify(order.json())
+                        'order',
+                        order.json()
                     ),
                     Notificator.sendMail(
                         order.user.email,
                         'Orden Generada',
-                        JSON.stringify(order.json())
+                        'order',
+                        order.json()
                     )
                 ])
             })
@@ -58,14 +62,22 @@ class Notificator {
                 await Notificator.sendMail(
                     Notificator.settings.reciver.admin_mail!,
                     'Error en el sistema',
-                    JSON.stringify(error)
+                    'error',
+                    error
                 )
             })
         }
     }
 
-    private static async sendMail(to: string, subject: string, html: string) {
+    private static async sendMail(to: string, subject: string, template: string, params?: any) {
         if (!Notificator.mail) return;
+
+        const html = await new Promise<string>((res, rej) => {
+            ejs.renderFile(`./src/models/notificator/templates/${template}.ejs`, params, (err, html) => {
+                if (err) rej(err);
+                else res(html)
+            });
+        })
 
         await Notificator.mail.sendMail({
             from: Notificator.settings.senders.mail?.user,
