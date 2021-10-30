@@ -26,7 +26,7 @@ class MessageController extends Controller {
                     id: user.id,
                     name: user.name,
                     phone: user.phone,
-                    email: user.phone
+                    email: user.email
                 },
                 body
             })
@@ -42,7 +42,7 @@ class MessageController extends Controller {
                     id: user.id,
                     name: user.name,
                     phone: user.phone,
-                    email: user.phone
+                    email: user.email
                 },
                 body
             })

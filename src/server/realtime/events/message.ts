@@ -26,8 +26,6 @@ class MessageEvents {
                 if (subs.filter.by && subs.filter.by !== message.by) return;
                 if (subs.filter.chat_id && subs.filter.chat_id !== message.chat_id) return;
 
-                console.log(message);
-
                 subs.socket.emit('/message/new', message.json());
             });
         })
@@ -35,8 +33,6 @@ class MessageEvents {
 
     public init(socket: Socket) {        
         socket.on("/message/follow", (filter: FilterMessage) => {
-            console.log('registrando', filter);
-
             const user: User = socket.handshake.auth.user;
 
             this.followers.set(socket.id, {
@@ -47,12 +43,10 @@ class MessageEvents {
         })
 
         socket.on("/message/unfollow", () => {
-            console.log('removiendo');
             this.followers.delete(socket.id)
         })
 
         socket.on("disconnect", () => {
-            console.log('removiendo');
             this.followers.delete(socket.id);
         })
     }

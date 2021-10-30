@@ -67,6 +67,8 @@ const createRouter = async (settings: RestSettings) => {
     app.use('/order', OrderRouter);
     app.use('/settings', SettingsRouter);
 
+    app.use(express.static('./public'));
+
     app.use(ErrorsMiddleware);
 
     return app;
