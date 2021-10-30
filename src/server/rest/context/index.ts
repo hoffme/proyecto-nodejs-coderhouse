@@ -17,7 +17,9 @@ class Context {
     public static async build(req: Request): Promise<Context> {
         let data: UserData | undefined;
 
-        const access = req.headers.authorization?.split(" ")[1];
+        // const access = req.headers.authorization?.split(" ")[1];     // method with headers
+        const access = req.session.token?.access;                       // method with sessions
+
         if (access) {
             const token: UserToken = { access };
 

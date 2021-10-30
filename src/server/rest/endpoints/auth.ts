@@ -12,6 +12,7 @@ router.post('/signin', asyncHandler(async (req) => {
     const params: SignInParams = req.body;
     
     const token = await Controllers.auth.signin(params);
+    req.session.token = token;
     
     return token;
 }));
@@ -25,6 +26,7 @@ router.post('/signup', asyncHandler(async (req) => {
         email: params.email,
         password: params.password
     });
+    req.session.token = token;
     
     return token;
 }))
