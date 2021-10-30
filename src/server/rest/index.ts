@@ -52,6 +52,9 @@ const createRouter = async (settings: RestSettings) => {
         secret: settings.session_secret,
         resave: false,
         saveUninitialized: false,
+        cookie: {
+            maxAge: settings.session_max_age
+        }
     }));
 
     app.use(CTXMiddleware);

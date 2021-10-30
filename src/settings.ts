@@ -82,7 +82,8 @@ const settings: Settings = {
     server: {
         port: process.env.PORT || '5000',
         rest: {
-            session_secret: 'SESSION SECRET'
+            session_secret: 'SESSION SECRET',
+            session_max_age: 40000
         },
         realtime: {}
     }
