@@ -6,7 +6,8 @@
   "module": "module",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start:js": "npm run build && node dist/index.js",
+    "start": "ts-node src/index.ts",
     "dev": "nodemon src/index.ts"
   },
   "keywords": [],
@@ -24,7 +25,9 @@
     "@types/jsonwebtoken": "^8.5.5",
     "@types/node": "^15.12.5",
     "@types/nodemailer": "^6.4.4",
-    "nodemon": "^2.0.13"
+    "nodemon": "^2.0.13",
+    "tsc": "^2.0.3",
+    "typescript": "^4.4.4"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -40,7 +43,6 @@
     "mongoose": "^5.13.3",
     "nodemailer": "^6.6.3",
     "socket.io": "^4.3.1",
-    "tsc": "^2.0.3",
-    "typescript": "^4.4.4"
+    "ts-node": "^10.4.0"
   }
 }
