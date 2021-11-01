@@ -66,16 +66,13 @@ class ProductMongooseDAO implements UserDAO {
         if (filter.id) mongoFilter._id = filter.id;
         if (filter.email) mongoFilter.email = filter.email;
 
-        const user = await this.collection.findById(mongoFilter);
+        const user = await this.collection.findOne(mongoFilter);
         if (!user) throw new Error("user not found");
 
         return toModel(user);
     }
     
     async create(cmd: CreateUserCMD): Promise<UserDTO> {
-        const exist = await this.find({ email: cmd.email });
-        if (exist) throw new Error('user already register');
-
         const inserted = await this.collection.create({
             ...cmd
         });
