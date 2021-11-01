@@ -7,6 +7,6 @@ import settings from '../../../settings';
 
 const router = Router();
 
-router.get('/settings', auth('admin'), asyncHandler(async () => settings))
+router.get('/', auth('admin'), asyncHandler(async () => settings))
 
 export default router;

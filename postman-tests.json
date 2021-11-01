@@ -1,0 +1,2925 @@
+{
+	"info": {
+		"_postman_id": "e2b87726-e75b-4eb8-91a1-197119ba1038",
+		"name": "NodeJS Text",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "products",
+			"item": [
+				{
+					"name": "get_sin_id_error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"test_get_sin_id_error\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_products}}/",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_con_id_invalido_error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"test_get_con_id_invalido_error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.eql({",
+									"        error: {",
+									"            message: \"product not found\"",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_products}}/617f328827c66b8bf9327813",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								"617f328827c66b8bf9327813"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_buscar_productos_sin_productos_devuelve_array_vacio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"test_search_sin_filtros\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.be.an(\"array\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_products}}/search",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_new_product_sin_admin_error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"test_product_create_unauthorized\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.eql({",
+									"        \"error\": {",
+									"            message: \"user not authorized\"",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mermelada de Frutilla\",\n    \"description\": \"Mermelada de frutilla arcor de 250 grs\",\n    \"code\": \"MERFRU\",\n    \"picture\": \"www.ramdomimages.com/mermelada.jpg\",\n    \"price\": 249.99,\n    \"stock\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_products}}/",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"access\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_new_product_con_admin_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"test_product_created\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"name\");",
+									"    pm.expect(jsonData.result).to.have.property(\"description\");",
+									"    pm.expect(jsonData.result).to.have.property(\"code\");",
+									"    pm.expect(jsonData.result).to.have.property(\"picture\");",
+									"    pm.expect(jsonData.result).to.have.property(\"price\");",
+									"    pm.expect(jsonData.result).to.have.property(\"stock\");",
+									"",
+									"    pm.globals.set(\"product_id\", jsonData.result.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mermelada de Frutilla\",\n    \"description\": \"Mermelada de frutilla arcor de 250 grs\",\n    \"code\": \"MERFRU\",\n    \"picture\": \"www.ramdomimages.com/mermelada.jpg\",\n    \"price\": 249.99,\n    \"stock\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_products}}/",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    console.log(jsonData);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const uri = pm.variables.get(\"host\")+pm.variables.get(\"uri_auth\")+'/logout';",
+									"",
+									"pm.sendRequest(uri, function (err, response) {",
+									"    console.log(response);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/logout",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_obtener_product_creado_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"test_get_con_id_valido\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result.id).to.eql(pm.globals.get(\"product_id\"));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_products}}/{{product_id}}",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								"{{product_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_buscar_productos_devuelve_los_listado",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_products}}/search",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put_modify_product_sin_admin_error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.eql({",
+									"        \"error\": {",
+									"            message: \"user not authorized\"",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mermelada\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_products}}/{{product_id}}",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								"{{product_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin_ok Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"access\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put_modify_product_con_admin_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mermelada\",\n    \"description\": \"nueva descripcion\",\n    \"code\": \"MERFRUT\",\n    \"picture\": \"otra imagen\",\n    \"price\": 33.43,\n    \"stock\": 90\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_products}}/{{product_id}}",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								"{{product_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout_ok Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    console.log(jsonData);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const uri = pm.variables.get(\"host\")+pm.variables.get(\"uri_auth\")+'/logout';",
+									"",
+									"pm.sendRequest(uri, function (err, response) {",
+									"    console.log(response);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/logout",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_obtener_product_modificado_ok",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_products}}/{{product_id}}",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								"{{product_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_sin_admin_devuelve_error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.eql({",
+									"        \"error\": {",
+									"            message: \"user not authorized\"",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_products}}/{{product_id}}",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								"{{product_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin_ok Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"access\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_con_admin_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_products}}/{{product_id}}",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								"{{product_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout_ok Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    console.log(jsonData);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const uri = pm.variables.get(\"host\")+pm.variables.get(\"uri_auth\")+'/logout';",
+									"",
+									"pm.sendRequest(uri, function (err, response) {",
+									"    console.log(response);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/logout",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_obtener_product_eliminado_no_se_encuentra",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Your test name\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.eql({",
+									"        \"error\": {",
+									"            message: \"product not found\"",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_products}}/{{product_id}}",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								"{{product_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "cart",
+			"item": [
+				{
+					"name": "get_user_new_cart_sin_auth_client_ni_user_id_not_found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.message).to.eql(\"user not authorized\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"access\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_user_new_cart_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"city\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"zip_code\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"street\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"number\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"indications\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_cart}}",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_new_product_con_admin_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"test_product_created\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.globals.set(\"product_cart_1_id\", jsonData.result.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mermelada de Frutilla\",\n    \"description\": \"Mermelada de frutilla arcor de 250 grs\",\n    \"code\": \"MERFRU\",\n    \"picture\": \"www.ramdomimages.com/mermelada.jpg\",\n    \"price\": 249.99,\n    \"stock\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_products}}/",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_new_product_con_admin_ok_2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"test_product_created\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.globals.set(\"product_cart_2_id\", jsonData.result.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Mermelada de Frutilla\",\n    \"description\": \"Mermelada de frutilla arcor de 250 grs\",\n    \"code\": \"MERFRU\",\n    \"picture\": \"www.ramdomimages.com/mermelada.jpg\",\n    \"price\": 249.99,\n    \"stock\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_products}}/",
+							"host": [
+								"{{host}}{{uri_products}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_add_product_not_found_error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"test_get_con_id_invalido_error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.eql({",
+									"        error: {",
+									"            message: \"product not found\"",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": \"617f328827c66b8bf9327813\",\n    \"quantity\": 33\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/products",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_add_product_id_correcto_ok Copy 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.items_ref.length).to.equal(1);",
+									"",
+									"    pm.expect(jsonData.result.items_ref[0].product_id).to.equal(pm.globals.get(\"product_cart_1_id\"))",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": \"{{product_cart_1_id}}\",\n    \"quantity\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/products",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_add_product_id_correcto_ok Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.items_ref.length).to.equal(2);",
+									"",
+									"    pm.expect(jsonData.result.items_ref[1].product_id).to.equal(pm.globals.get(\"product_cart_2_id\"))",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": \"{{product_cart_2_id}}\",\n    \"quantity\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/products",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_cart_con_productos_agregados_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.items_ref.length).to.equal(2);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_item_carrito_sin_id_error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"test_get_sin_id_error\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/products",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_item_carrito_con_id_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.items_ref.length).to.equal(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/products/{{product_cart_1_id}}",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								"products",
+								"{{product_cart_1_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_cart_con_producto_borrado_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.items_ref.length).to.equal(1);",
+									"",
+									"    pm.expect(jsonData.result.items_ref[0].product_id).to.equal(pm.globals.get(\"product_cart_2_id\"));",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_add_product_id_correcto_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": \"{{product_cart_1_id}}\",\n    \"quantity\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/products",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "limpiar_carrito",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.items_ref.length).to.equal(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/clear",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								"clear"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_cart_limpio_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.items_ref.length).to.equal(0);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_address_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.address.city).to.equal(\"pehuajo\");",
+									"    pm.expect(jsonData.result.address.zip_code).to.equal(\"6450\");",
+									"    pm.expect(jsonData.result.address.street).to.equal(\"Gutierrez\");",
+									"    pm.expect(jsonData.result.address.number).to.equal(\"1655\");",
+									"    pm.expect(jsonData.result.address.indications).to.equal(\"tocar timbre\");",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"city\": \"pehuajo\",\n    \"zip_code\": \"6450\",\n    \"street\": \"Gutierrez\",\n    \"number\": \"1655\",\n    \"indications\": \"tocar timbre\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/address",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								"address"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_cart_con_address_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.address.city).to.equal(\"pehuajo\");",
+									"    pm.expect(jsonData.result.address.zip_code).to.equal(\"6450\");",
+									"    pm.expect(jsonData.result.address.street).to.equal(\"Gutierrez\");",
+									"    pm.expect(jsonData.result.address.number).to.equal(\"1655\");",
+									"    pm.expect(jsonData.result.address.indications).to.equal(\"tocar timbre\");",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_add_product_id_correcto_ok Copy 4",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.items_ref.length).to.equal(1);",
+									"",
+									"    pm.expect(jsonData.result.items_ref[0].product_id).to.equal(pm.globals.get(\"product_cart_1_id\"))",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": \"{{product_cart_1_id}}\",\n    \"quantity\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/products",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_add_product_id_correcto_ok Copy 5",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items_ref\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.items_ref.length).to.equal(2);",
+									"",
+									"    pm.expect(jsonData.result.items_ref[1].product_id).to.equal(pm.globals.get(\"product_cart_2_id\"))",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"product_id\": \"{{product_cart_2_id}}\",\n    \"quantity\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/products",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "finish",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"state\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"name\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"phone\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"email\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");pm.expect(jsonData.result.address).to.have.property(\"city\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"zip_code\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"street\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"number\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"indications\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.globals.set(\"order_id\", jsonData.result.id);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_cart}}/finish",
+							"host": [
+								"{{host}}{{uri_cart}}"
+							],
+							"path": [
+								"finish"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    console.log(jsonData);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const uri = pm.variables.get(\"host\")+pm.variables.get(\"uri_auth\")+'/logout';",
+									"",
+									"pm.sendRequest(uri, function (err, response) {",
+									"    console.log(response);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/logout",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "signin_invalid_credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign in invalid credentials\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.message).to.eql(\"user not found\");",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"example2@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin_not_user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign in not user\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.message).to.eql(\"user not found\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"example2@example.com\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sigin ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"access\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Juan Ignacio\",\n    \"lastname\": \"Coronel\",\n    \"phone\": \"2396610172\",\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signup",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signup_error_exist_user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sigin ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.message).to.equal(\"user already register\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Juan Ignacio\",\n    \"lastname\": \"Coronel\",\n    \"phone\": \"2396610172\",\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signup",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin_invalid_password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign invalid password\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.message).to.eql(\"invalid password\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"access\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"logout ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/logout",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "get_profile_without_login_error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.message).to.eql(\"user not authorized\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_user}}/",
+							"host": [
+								"{{host}}{{uri_user}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"access\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_profile_with_login_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"type\");",
+									"    pm.expect(jsonData.result).to.have.property(\"name\");",
+									"    pm.expect(jsonData.result).to.have.property(\"lastname\");",
+									"    pm.expect(jsonData.result).to.have.property(\"email\");",
+									"    pm.expect(jsonData.result).to.have.property(\"phone\");",
+									"",
+									"    pm.globals.set(\"user_id\", jsonData.result.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_user}}/",
+							"host": [
+								"{{host}}{{uri_user}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_profile_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"type\");",
+									"    pm.expect(jsonData.result).to.have.property(\"name\");",
+									"    pm.expect(jsonData.result).to.have.property(\"lastname\");",
+									"    pm.expect(jsonData.result).to.have.property(\"email\");",
+									"    pm.expect(jsonData.result).to.have.property(\"phone\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"juan ignacio asd\",\n    \"lastname\": \"coronel asd\",\n    \"phone\": \"+542396610172 asd\",\n    \"email\": \"{{user_email}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_user}}/",
+							"host": [
+								"{{host}}{{uri_user}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "settings",
+			"item": [
+				{
+					"name": "settings_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.message).to.eql(\"user not authorized\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_settings}}",
+							"host": [
+								"{{host}}{{uri_settings}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin_ok Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"access\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "settings_ok Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_settings}}",
+							"host": [
+								"{{host}}{{uri_settings}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    console.log(jsonData);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const uri = pm.variables.get(\"host\")+pm.variables.get(\"uri_auth\")+'/logout';",
+									"",
+									"pm.sendRequest(uri, function (err, response) {",
+									"    console.log(response);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/logout",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "orders",
+			"item": [
+				{
+					"name": "get_orders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.message).to.eql(\"user not authorized\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_order}}",
+							"host": [
+								"{{host}}{{uri_order}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin_ok Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"access\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_orders_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    if (jsonData.result.length === 0) return;",
+									"",
+									"    pm.expect(jsonData.result[0]).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result[0]).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result[0]).to.have.property(\"state\");",
+									"    pm.expect(jsonData.result[0]).to.have.property(\"items\");",
+									"    pm.expect(jsonData.result[0]).to.have.property(\"user\");",
+									"    pm.expect(jsonData.result[0].user).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result[0].user).to.have.property(\"name\");",
+									"    pm.expect(jsonData.result[0].user).to.have.property(\"phone\");",
+									"    pm.expect(jsonData.result[0].user).to.have.property(\"email\");",
+									"    pm.expect(jsonData.result[0]).to.have.property(\"address\");",
+									"    pm.expect(jsonData.result[0].address).to.have.property(\"city\");",
+									"    pm.expect(jsonData.result[0].address).to.have.property(\"zip_code\");",
+									"    pm.expect(jsonData.result[0].address).to.have.property(\"street\");",
+									"    pm.expect(jsonData.result[0].address).to.have.property(\"number\");",
+									"    pm.expect(jsonData.result[0].address).to.have.property(\"indications\");",
+									"    pm.expect(jsonData.result[0]).to.have.property(\"total\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_order}}",
+							"host": [
+								"{{host}}{{uri_order}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_order_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"state\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"name\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"phone\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"email\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");pm.expect(jsonData.result.address).to.have.property(\"city\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"zip_code\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"street\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"number\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"indications\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_order}}/{{order_id}}",
+							"host": [
+								"{{host}}{{uri_order}}"
+							],
+							"path": [
+								"{{order_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set_state_order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"state\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"name\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"phone\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"email\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");pm.expect(jsonData.result.address).to.have.property(\"city\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"zip_code\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"street\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"number\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"indications\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.globals.set(\"order_state\", \"confirmada\");",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_order}}/{{order_id}}/state/confirmada",
+							"host": [
+								"{{host}}{{uri_order}}"
+							],
+							"path": [
+								"{{order_id}}",
+								"state",
+								"confirmada"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_order_ok Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"get cart ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"state\");",
+									"    pm.expect(jsonData.result).to.have.property(\"items\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"name\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"phone\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"email\");",
+									"    pm.expect(jsonData.result).to.have.property(\"address\");pm.expect(jsonData.result.address).to.have.property(\"city\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"zip_code\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"street\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"number\");",
+									"    pm.expect(jsonData.result.address).to.have.property(\"indications\");",
+									"    pm.expect(jsonData.result).to.have.property(\"total\");",
+									"",
+									"    pm.expect(jsonData.result.state).to.equal(pm.globals.get(\"order_state\"));",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_order}}/{{order_id}}",
+							"host": [
+								"{{host}}{{uri_order}}"
+							],
+							"path": [
+								"{{order_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    console.log(jsonData);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const uri = pm.variables.get(\"host\")+pm.variables.get(\"uri_auth\")+'/logout';",
+									"",
+									"pm.sendRequest(uri, function (err, response) {",
+									"    console.log(response);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/logout",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "messages",
+			"item": [
+				{
+					"name": "get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error.message).to.eql(\"user not authorized\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_message}}",
+							"host": [
+								"{{host}}{{uri_message}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "signin_ok Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"sign ok\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.result).to.have.property(\"access\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{user_email}}\",\n    \"password\": \"{{user_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/signin",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_ok",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.result).to.be.an(\"array\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_message}}",
+							"host": [
+								"{{host}}{{uri_message}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_ok Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData.result).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"timestamp\");",
+									"    pm.expect(jsonData.result).to.have.property(\"by\");",
+									"    pm.expect(jsonData.result).to.have.property(\"user\");",
+									"    pm.expect(jsonData.result).to.have.property(\"chat_id\");",
+									"    pm.expect(jsonData.result).to.have.property(\"body\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"id\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"name\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"phone\");",
+									"    pm.expect(jsonData.result.user).to.have.property(\"email\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"body\": \"mensaje 1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_message}}/{{user_id}}",
+							"host": [
+								"{{host}}{{uri_message}}"
+							],
+							"path": [
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_ok Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.result).to.be.an(\"array\");",
+									"    pm.expect(jsonData.result.length).gt(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{uri_message}}",
+							"host": [
+								"{{host}}{{uri_message}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Yget profile without login error\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    console.log(jsonData);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const uri = pm.variables.get(\"host\")+pm.variables.get(\"uri_auth\")+'/logout';",
+									"",
+									"pm.sendRequest(uri, function (err, response) {",
+									"    console.log(response);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}{{uri_auth}}/logout",
+							"host": [
+								"{{host}}{{uri_auth}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ping",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"test_ping\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.eql({",
+							"        result: \"pong\"",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/ping",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:5000"
+		},
+		{
+			"key": "uri_products",
+			"value": "/product"
+		},
+		{
+			"key": "uri_cart",
+			"value": "/cart"
+		},
+		{
+			"key": "uri_auth",
+			"value": "/auth"
+		},
+		{
+			"key": "uri_user",
+			"value": "/user"
+		},
+		{
+			"key": "uri_message",
+			"value": "/chat"
+		},
+		{
+			"key": "uri_order",
+			"value": "/order"
+		},
+		{
+			"key": "uri_settings",
+			"value": "/settings"
+		},
+		{
+			"key": "user_email",
+			"value": "example@example.com"
+		},
+		{
+			"key": "user_password",
+			"value": "12345"
+		}
+	]
+}

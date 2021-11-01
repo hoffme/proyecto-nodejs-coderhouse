@@ -20,7 +20,7 @@ router.put('/', auth(), asyncHandler(async req => {
 
     const update = await Controllers.user.update(user_id, fields);
 
-    return update;
+    return update.json();
 }));
 
 export default router;

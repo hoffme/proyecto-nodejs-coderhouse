@@ -50,7 +50,7 @@ class Order {
         const productsIds = cart.items_ref.map(item => item.product_id)
         const products = await Product.search({ ids: productsIds });
         const productsMap = Object.fromEntries(products.map(product => [product.id, product]));
-        
+
         const items = cart.items_ref.map(item_ref => {
             const product = productsMap[item_ref.product_id];
             if (!product) throw new Error('Error al procesar los productos');

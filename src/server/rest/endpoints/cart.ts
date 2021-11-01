@@ -8,13 +8,13 @@ import asyncHandler from '../utils/wrap';
 
 const router = Router();
 
-router.get('/', auth('client'), asyncHandler(async req => {
+router.get('/', auth(), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
     
     return (await Controllers.cart.get(user_id)).json();
 }));
 
-router.post('/clear', auth('client'), asyncHandler(async req => {
+router.post('/clear', auth(), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
     
     const cart = await Controllers.cart.get(user_id);
@@ -23,7 +23,7 @@ router.post('/clear', auth('client'), asyncHandler(async req => {
     return cart.json();
 }));
 
-router.post('/address', auth('client'), asyncHandler(async req => {
+router.post('/address', auth(), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
     const address: AddressDTO = req.body;
     
@@ -33,7 +33,7 @@ router.post('/address', auth('client'), asyncHandler(async req => {
     return cart.json();
 }));
 
-router.post('/products', auth('client'), asyncHandler(async req => {
+router.post('/products', auth(), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
     const itemDTA: { product_id: string, quantity: number } = req.body;
 
@@ -43,7 +43,7 @@ router.post('/products', auth('client'), asyncHandler(async req => {
     return cart.json();
 }));
 
-router.delete('/products/:product_id', auth('client'), asyncHandler(async req => {
+router.delete('/products/:product_id', auth(), asyncHandler(async req => {
     const user_id = req.ctx.user.id;
     const product_id: string = req.params.product_id;
     
@@ -53,7 +53,7 @@ router.delete('/products/:product_id', auth('client'), asyncHandler(async req =>
     return cart.json();
 }));
 
-router.post('/finish', auth('client'), asyncHandler(async req => {
+router.post('/finish', auth(), asyncHandler(async req => {
     const user = req.ctx.user;
 
     const cart = await Controllers.cart.get(user.id);

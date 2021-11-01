@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import Controllers from '../../../controllers/index';
+import { FilterMessageCMD, Message } from '../../../models/message';
 
 import auth from '../middlewares/auth';
 import asyncHandler from '../utils/wrap';
@@ -10,7 +11,10 @@ const router = Router();
 router.get('/', auth(), asyncHandler(async req => {
     const user = req.ctx.user;
 
-    const messages = await Controllers.message.search({ user_id: user.id });
+    const filter: FilterMessageCMD = { user_id: user.id };
+    if (user.type === 'admin') delete filter.user_id;
+
+    const messages = await Controllers.message.search(filter);
 
     return messages.map(message => message.json())
 }));

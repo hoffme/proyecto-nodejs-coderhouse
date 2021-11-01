@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { ObjectId, Schema } from 'mongoose';
 
 import { DAOMongoSettings } from '../../../models/storage/settings';
 
@@ -64,8 +64,16 @@ class ProductMongooseRepository implements ProductDAO {
         })
     }
 
+    private createOID(id: string): mongoose.Types.ObjectId {
+        try {
+            return mongoose.Types.ObjectId.createFromHexString(id);
+        } catch (e) {}
+
+        throw new Error(`invalid id ${id}`);
+    }
+
     async find(id: string): Promise<ProductDTO> {
-        const product = await this.collection.findById(id);
+        const product = await this.collection.findById(this.createOID(id));
         if (!product) throw new Error("product not found");
 
         return toModel(product);
@@ -74,7 +82,7 @@ class ProductMongooseRepository implements ProductDAO {
     async search(filter: FilterProductCMD): Promise<ProductDTO[]> {
         let mongooseFilter: any = {};
 
-        if (filter.ids) mongooseFilter.id = { $in: filter.ids };
+        if (filter.ids) mongooseFilter._id = { $in: filter.ids };
         if (filter.name) mongooseFilter.name = filter.name;
         if (filter.code) mongooseFilter.code = filter.code;
 
@@ -103,7 +111,7 @@ class ProductMongooseRepository implements ProductDAO {
     }
 
     async update(id: string, cmd: UpdateProductCMD): Promise<ProductDTO> {
-        const data = await this.collection.findById(id);
+        const data = await this.collection.findById(this.createOID(id));
         if (!data) throw new Error("product not found");
 
         data.name = cmd.name || data.name;
@@ -120,7 +128,7 @@ class ProductMongooseRepository implements ProductDAO {
     }
 
     async delete(id: string): Promise<ProductDTO> {
-        const data = await this.collection.findById(id);
+        const data = await this.collection.findById(this.createOID(id));
         if (!data) throw new Error("product not found");
 
         await data.deleteOne()

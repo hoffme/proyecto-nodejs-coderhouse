@@ -18,6 +18,8 @@ class UserController extends Controller {
 
     async update(id: string, update: UpdateUser): Promise<User> {
         return Controller.secureMethod(async () => {
+            delete update.type;
+
             const user = await User.getById(id);
             await user.update(update);
             return user;

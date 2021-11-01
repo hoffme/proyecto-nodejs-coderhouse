@@ -20,7 +20,13 @@ const toModel = (data: OrderMongoose): OrderDTO => {
         timestamp: data.timestamp,
         state: data.state,
         user: data.user,
-        items: data.items,
+        items: data.items.map(item => ({
+            id: item.id,
+            name: item.name,
+            unit_price: item.unit_price,
+            quantity: item.quantity,
+            total: item.total
+        })),
         address: data.address,
         total: data.total
     }
@@ -50,7 +56,7 @@ class OrderMongooseDAO implements OrderDAO {
         this.schema = new Schema<OrderMongoose>({
             timestamp: Date,
             user_id: String,
-            items_ref: [this.itemSchema],
+            items: [this.itemSchema],
             user: {
                 id: String,
                 name: String,

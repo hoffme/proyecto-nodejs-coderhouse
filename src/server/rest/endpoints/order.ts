@@ -30,7 +30,7 @@ router.get('/:id', auth(), asyncHandler(async req => {
     const order = await Controllers.order.get(order_id);
     
     if (user.type !== 'admin' && user.id !== order.user.id) {
-        return null;
+        throw new Error('user not authorized')
     }
 
     return order.json();

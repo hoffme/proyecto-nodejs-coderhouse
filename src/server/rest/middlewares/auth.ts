@@ -8,7 +8,7 @@ const auth = (type?: UserType): RequestHandler => {
     return (req, res, next) => {
         if (req.ctx.isAuthenticated(type)) return next();
 
-        errorResponse(res, 'unauthorized', 401)
+        errorResponse(res, 'user not authorized', 401)
     }
 }
 

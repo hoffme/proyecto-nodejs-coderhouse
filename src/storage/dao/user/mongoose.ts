@@ -73,6 +73,9 @@ class ProductMongooseDAO implements UserDAO {
     }
     
     async create(cmd: CreateUserCMD): Promise<UserDTO> {
+        const exist = await this.collection.findOne({ email: cmd.email });
+        if (exist) throw new Error('user already register');
+
         const inserted = await this.collection.create({
             ...cmd
         });

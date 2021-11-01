@@ -37,17 +37,17 @@ class Context {
     }
 
     public get token(): UserToken {
-        if (!this.user_data) throw new Error('user not logged');
+        if (!this.user_data) throw new Error('user not authorized');
         return this.user_data.token;
     }
 
     public get user(): User {
-        if (!this.user_data) throw new Error('user not logged');
+        if (!this.user_data) throw new Error('user not authorized');
         return this.user_data.user;
     }
 
     public isAuthenticated(userType?: UserType): boolean {
-        if (!this.user_data) throw new Error('user not logged');
+        if (!this.user_data) throw new Error('user not authorized');
         if (!userType) return true;
         
         return this.user_data.user.type === userType;
